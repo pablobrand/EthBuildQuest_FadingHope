@@ -18,7 +18,6 @@ contract SmartContract is ERC721, Ownable {
   
   Counters.Counter _tokenIds;
   
-  
   //The struct for each Kingdom
   struct RenderNFT {
     string uri;
