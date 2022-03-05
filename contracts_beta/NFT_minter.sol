@@ -8,6 +8,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract SmartContract is ERC721, Ownable {
 
+  //creating the Token
   constructor() ERC721("Fading Hope", "FH") {}
 
 
@@ -18,7 +19,7 @@ contract SmartContract is ERC721, Ownable {
   Counters.Counter _tokenIds;
   
   
-
+  //The struct for each Kingdom
   struct RenderNFT {
     string uri;
     uint hp;
