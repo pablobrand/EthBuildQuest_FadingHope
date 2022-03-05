@@ -6,10 +6,10 @@ To setup project
 `yarn install`
 
 Auto Compile contract
-`npx run watch:compile`
+`npx hardhat watch compile`
 
 Auto test contract
-`npx run watch:test`
+`npx hardhat watch test`
 
 Manual compile
 `npx run hardhat compile`
