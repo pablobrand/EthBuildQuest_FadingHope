@@ -39,7 +39,8 @@ contract SmartContract is ERC721, Ownable {
         _mint(msg.sender, newId);
 
         // Where this function is called? You push missing function bruno
-        // _setTokenURI(newId, uri);
+        
+        _setTokenURI(newId, uri);
 
         _tokenIds.increment();
         return newId;
