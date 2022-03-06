@@ -73,7 +73,7 @@ const config: HardhatUserConfig = {
     compile: {
       tasks: ["compile"],
       // files: ["./contracts/**/*"],
-      verbose: true,
+      // verbose: true,
     },
   }
 };

@@ -1,12 +1,17 @@
 import { expect } from "chai";
-import { BigNumber } from "ethers";
+import { BigNumber, Contract } from "ethers";
 import { ethers } from "hardhat";
 
-describe("Alien test", function () {
-  it("Local Test", async function () {
+describe("Kingdom NFT", async function () {
+
+  const [owner,player,] =  await ethers.getSigners();
+
+  it("New kingdom owned by player", async function () {
     const Factory = await ethers.getContractFactory("KingdomFactory");
-    const factory = await Factory.deploy();
+    const factory = await Factory.deploy(owner.address);
     await factory.deployed();
-    // TODO: Add test here
+
+    const name = "Cool Name Ass";
+    await factory.mintNFT(player.address, name);
   });
 });
