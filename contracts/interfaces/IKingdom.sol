@@ -5,6 +5,9 @@ pragma solidity ^0.8.0;
 /// Kindom should be a NFT token have unique owner and share authority with master
 interface IKingdom {
     
+    function mint(address to, string memory kingdomName) external;
+    
+
     function getName(uint tokenID) external view returns (string memory);
     function getRuler(uint tokenID) external view returns (address);
 
@@ -15,12 +18,16 @@ interface IKingdom {
     // should only be called by master contract and by owner
     function upgradeBuilding(uint tokenID,uint256 _buildingId) external;
 
-    // For later upgrade when we have new building. We want player can upgrade their NFT too.
-    // The logic is run on admin contract (which is upgradable contract)
-    function addNewBuilding(uint tokenID,uint256 _buildingId, uint256 _buildingLevel) external;
+    function getBuildingLevel(uint256 tokenID,uint256 _buildingId) external view returns (uint256);
+    function getBuildingsLevel(uint256 tokenID,uint256[] calldata _buildingId) external view returns (uint256[] memory);
 
-    function getBuildingLevel(uint256 _buildingId) external view returns (uint256);
 
+    function getTokenURI (uint256 tokenId, bytes32 uri) external view returns (string memory) ;
+    function getTokenURIs (uint256 tokenId, bytes32[] calldata uriList) external view returns (string[] memory) ;
     // called by invader or master.
     function destroyKingdom(uint tokenID) external;
+
+    function setTokenURI (uint256 tokenId, bytes32 uri, string memory data) external;
+    function setTokenURIs (uint256 tokenId, bytes32[] calldata uri, string[] calldata data) external;
+    
 }

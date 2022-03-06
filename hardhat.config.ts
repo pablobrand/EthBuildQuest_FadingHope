@@ -7,8 +7,10 @@ import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "@nomiclabs/hardhat-ethers";
 import "hardhat-watcher";
-
+import "hardhat-deploy";
 import "solidity-coverage";
+
+import "./scripts/tasks/deploy";
 
 dotenv.config();
 
@@ -26,6 +28,15 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 // Go to https://hardhat.org/config/ to learn more
 
 const config: HardhatUserConfig = {
+  paths: {
+    artifacts: "build/artifacts",
+    cache: "build/cache",
+    deploy: "scripts/deploy",
+    sources: "contracts",
+  },
+  namedAccounts: {
+    deployer: "0x9c9242F46692c0D3d262Cc3247c33359755Fd228", // Should be address from privatekey
+  },
   solidity: {
     compilers: [
       {
@@ -55,17 +66,17 @@ const config: HardhatUserConfig = {
     currency: "USD",
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
+    apiKey: "64D8FMTIH1UG2BCD2A1BFMFZCTF6S2YG95",
   },
   watcher: {
     test: {
-      tasks: [{ command: 'test', params: { noCompile: true , testFiles: ['{path}'] } }],
+      tasks: [{ command: 'test', params: {testFiles: ['{path}'] } }],
       files: ['./test/**/*'],
       verbose: true
       // params: { noCompile: true, testFiles: ["testfile.ts"] }
     },
     "test-local": {
-      tasks: [{ command: 'test', params: { noCompile: true , testFiles: ['{path}'], network: "localhost" } }],
+      tasks: [{ command: 'test', params: { noCompile: false , testFiles: ['{path}'], network: "localhost" } }],
       files: ['./test/**/*'],
       verbose: true
       // params: { noCompile: true, testFiles: ["testfile.ts"] }
@@ -73,7 +84,7 @@ const config: HardhatUserConfig = {
     compile: {
       tasks: ["compile"],
       // files: ["./contracts/**/*"],
-      // verbose: true,
+      verbose: true,
     },
   }
 };

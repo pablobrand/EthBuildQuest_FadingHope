@@ -1,15 +1,17 @@
 {
   "name": "hardhat-project",
   "scripts": {
-    "watch:test": "npx hardhat watch test",
-    "watch:compile": "npx hardhat watch compile",
+    "watch:test": "hardhat watch test",
+    "watch:compile": "hardhat watch compile",
     "build": "hardhat compile",
     "build:ts": "yarn rimraf dist && tsc",
     "test": "hardhat test",
-    "deploy": "hardhat deploy --network"
+    "verify": "hardhat etherscan-verify --network rinkeby",
+    "deploy": "hardhat deploy-all --network rinkeby",
+    "deploy:local": "hardhat deploy-all --network localhost"
   },
   "devDependencies": {
-    "@nomiclabs/hardhat-ethers": "^2.0.4",
+    "@nomiclabs/hardhat-ethers": "^2.0.5",
     "@nomiclabs/hardhat-etherscan": "^3.0.3",
     "@nomiclabs/hardhat-waffle": "^2.0.0",
     "@openzeppelin/contracts": "^4.5.0",
@@ -33,6 +35,7 @@
     "ethereum-waffle": "^3.0.0",
     "ethers": "^5.0.0",
     "hardhat": "^2.9.1",
+    "hardhat-deploy": "^0.10.5",
     "hardhat-ethers": "^1.0.1",
     "hardhat-gas-reporter": "^1.0.4",
     "hardhat-watcher": "^2.1.1",
