@@ -21,8 +21,9 @@ contract KingdomNFT is AccessControl, ERC721Enumerable {
     string private constant NFT_NAME = "Kingdom";
     string private constant NFT_SYMBOL = "KDM";
 
+    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     constructor(address _admin) ERC721(NFT_NAME, NFT_SYMBOL) {
-        _setupRole(DEFAULT_ADMIN_ROLE, _admin);
+        _setupRole(DEFAULT_ADMIN_ROLE, _admin); // give original admin power to manage role
     }
 
     function supportsInterface(bytes4 interfaceId) public view virtual override(AccessControl, ERC721Enumerable) returns (bool) {
@@ -64,7 +65,7 @@ contract KingdomNFT is AccessControl, ERC721Enumerable {
     /// Mint new kingdom token
     /// All building start from level 0.
     /// Towncenter start from lv 1.
-    function mint(address to, string memory kingdomName) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function mint(address to, string memory kingdomName) external onlyRole(ADMIN_ROLE) {
         require(bytes(kingdomName).length > 0, "Kingdom name cannot be empty");
         require(getTokenFromName(kingdomName) == 0, "Name already exist");
 
@@ -113,12 +114,12 @@ contract KingdomNFT is AccessControl, ERC721Enumerable {
     }
 
     ///// Master contract function
-    function setClaimTime(uint256 tokenID, uint256 time) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setClaimTime(uint256 tokenID, uint256 time) external onlyRole(ADMIN_ROLE) {
         Kingdom storage data = _tokenData[tokenID];
         data.lastRewardClaimTime = time;
     }
 
-    function setOccupation(uint256 tokenID, bool occupation) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setOccupation(uint256 tokenID, bool occupation) external onlyRole(ADMIN_ROLE) {
         Kingdom storage data = _tokenData[tokenID];
         data.underOccupation = occupation;
     }
@@ -129,14 +130,14 @@ contract KingdomNFT is AccessControl, ERC721Enumerable {
         uint256 tokenID,
         uint256 _buildingId,
         uint256 level
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    ) external onlyRole(ADMIN_ROLE) {
         Kingdom storage data = _tokenData[tokenID];
         data.buildingsLevel[_buildingId] = level;
         emit KingdomBuildingUpgraded(tokenID, _buildingId, level);
     }
 
     // called by invader or master.
-    function destroyKingdom(uint256 tokenID) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function destroyKingdom(uint256 tokenID) external onlyRole(ADMIN_ROLE) {
         _burn(tokenID);
     }
 
