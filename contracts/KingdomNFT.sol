@@ -36,6 +36,8 @@ contract KingdomNFT is AccessControl, ERC721Enumerable, IKingdom {
     bytes32 public constant URI_WALL = keccak256("Wall");
     bytes32 public constant URI_ICON = keccak256("Icon");
 
+    /// The data required for a kingdom is intensive, this should be a proxy contract storage by its own.
+    /// The NFT token is only enough for simple token, for more complex token, each token should be a contract with its own storage.
     struct KingdomData {
         uint256 lastClaimTime;
         mapping(uint256 => uint256) buildings; // Building level
@@ -111,7 +113,7 @@ contract KingdomNFT is AccessControl, ERC721Enumerable, IKingdom {
         uint256 tokenId,
         bytes32 uri,
         string memory data
-    ) external override onlyRole(DEFAULT_ADMIN_ROLE) {
+    ) external override onlyOwnerOrAdmin(tokenId) {        
         _tokenData[tokenId].kingdomURIs[uri] = data;
     }
 
@@ -119,7 +121,7 @@ contract KingdomNFT is AccessControl, ERC721Enumerable, IKingdom {
         uint256 tokenId,
         bytes32[] calldata uri,
         string[] calldata data
-    ) external override {
+    ) external override onlyOwnerOrAdmin(tokenId) {
         for (uint256 i = 0; i < uri.length; i++) {
             _tokenData[tokenId].kingdomURIs[uri[i]] = data[i];
         }
@@ -143,5 +145,12 @@ contract KingdomNFT is AccessControl, ERC721Enumerable, IKingdom {
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
         string memory baseURI = _tokenData[tokenId].kingdomURIs[URI_ICON];
         return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString())) : "";
+    }
+
+    modifier onlyOwnerOrAdmin(uint tokenId) {
+        require(_msgSender() == getRuler(tokenId) || 
+            hasRole(DEFAULT_ADMIN_ROLE, _msgSender())
+        , "Only owner or admin can call this function");
+        _;
     }
 }
