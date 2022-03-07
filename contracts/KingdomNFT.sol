@@ -24,6 +24,7 @@ contract KingdomNFT is AccessControl, ERC721Enumerable {
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     constructor(address _admin) ERC721(NFT_NAME, NFT_SYMBOL) {
         _setupRole(DEFAULT_ADMIN_ROLE, _admin); // give original admin power to manage role
+        _grantRole(ADMIN_ROLE, _admin);
     }
 
     function supportsInterface(bytes4 interfaceId) public view virtual override(AccessControl, ERC721Enumerable) returns (bool) {
@@ -45,7 +46,7 @@ contract KingdomNFT is AccessControl, ERC721Enumerable {
 
     struct Kingdom {
         uint256 lastRewardClaimTime;
-        bool underOccupation; // cut income in half if so.
+        bool underOccupation; // cut income in half if true.
         string uri;
         uint256[] buildingsLevel;
     }
