@@ -74,16 +74,16 @@ contract KingdomNFT is AccessControl, ERC721Enumerable, IKingdom {
 
     ///// IKingdom interface //////
 
-    function getName(uint256 tokenID) external view override returns (string memory) {
+    function getName(uint256 tokenID) public view override returns (string memory) {
         return _tokenName[tokenID];
     }
 
-    function getTokenFromName(string memory kingdomName) internal view returns (uint256 tokenId) {
+    function getTokenFromName(string memory kingdomName) public view returns (uint256 tokenId) {
         return _nameToToken[kingdomName];
     }
 
     // call master contract to mint owner money based on their kingdom level.
-    function claimReward(uint256 tokenID) external override {}
+    function claimReward(uint256 tokenID) external override onlyRole(DEFAULT_ADMIN_ROLE) {}
 
     // call master contract to burn owner token to exchange for upgrade.
     // should only be called by master contract and by owner
