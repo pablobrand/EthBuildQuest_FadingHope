@@ -3,8 +3,6 @@
 pragma solidity ^0.8.0;
 
 import "./IKingdom.sol";
-import "./IFactory.sol";
-import "./IPersonalization.sol";
 import "./IUnit.sol";
 
 /// Handle most logic of the game.
@@ -30,5 +28,15 @@ interface IMaster {
 
     function BurnKingdom(IKingdom kingdom) external;
 
-    function AttackKingdom(IKingdom from, IKingdom target) external;
+    function AttackKingdom(IKingdom from, IKingdom target, string calldata reason) external;
+    
+    function SendGlobalMessage(string calldata message) external;
+    function PinGlobalMessage(string memory message) external;
+
+    event AttackKingdomEvent(IKingdom from, IKingdom target, string justification);
+    event BurnKingdomEvent(IKingdom kingdom, address attacker);
+    event ClaimKingdomRewardEvent(IKingdom kingdom, uint amount);
+    event GlobalMessageEvent(string message);
+    event PinGlobalMessageEvent(string message);
+
 }

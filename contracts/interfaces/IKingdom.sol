@@ -9,14 +9,13 @@ interface IKingdom {
     
 
     function getName(uint tokenID) external view returns (string memory);
-    function getRuler(uint tokenID) external view returns (address);
 
     // call master contract to mint owner money based on their kingdom level.
     function claimReward(uint tokenID) external;
 
     // call master contract to burn owner token to exchange for upgrade.
     // should only be called by master contract and by owner
-    function upgradeBuilding(uint tokenID,uint256 _buildingId) external;
+    function upgradeBuilding(uint tokenID,uint256 _buildingId,uint256 level) external;
 
     function getBuildingLevel(uint256 tokenID,uint256 _buildingId) external view returns (uint256);
     function getBuildingsLevel(uint256 tokenID,uint256[] calldata _buildingId) external view returns (uint256[] memory);
@@ -29,5 +28,9 @@ interface IKingdom {
 
     function setTokenURI (uint256 tokenId, bytes32 uri, string memory data) external;
     function setTokenURIs (uint256 tokenId, bytes32[] calldata uri, string[] calldata data) external;
+    
+    event KingdomCreated(uint256 tokenID, string kingdomName, address owner);
+    event KingdomBuildingUpgraded(uint256 tokenID, uint256 buildingId, uint256 level);
+    event KingdomURIChanged(uint256 tokenID, bytes32 uri, string data);
     
 }

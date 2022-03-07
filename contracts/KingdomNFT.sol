@@ -69,6 +69,7 @@ contract KingdomNFT is AccessControl, ERC721Enumerable, IKingdom {
 
         KingdomData storage data = _tokenData[tokenId];
         data.buildings[0] = 1; // TownCenter
+        emit KingdomCreated(tokenId, kingdomName, to);
     }
 
     ///// IKingdom interface //////
@@ -81,16 +82,16 @@ contract KingdomNFT is AccessControl, ERC721Enumerable, IKingdom {
         return _nameToToken[kingdomName];
     }
 
-    function getRuler(uint256 tokenId) external view override returns (address) {
-        return ownerOf(tokenId);
-    }
-
     // call master contract to mint owner money based on their kingdom level.
     function claimReward(uint256 tokenID) external override {}
 
     // call master contract to burn owner token to exchange for upgrade.
     // should only be called by master contract and by owner
-    function upgradeBuilding(uint256 tokenID, uint256 _buildingId) external override onlyRole(DEFAULT_ADMIN_ROLE) {}
+    function upgradeBuilding(uint256 tokenID, uint256 _buildingId,uint256 level) external override onlyRole(DEFAULT_ADMIN_ROLE) {
+        KingdomData storage data = _tokenData[tokenID];
+        data.buildings[_buildingId] = level;
+        emit KingdomBuildingUpgraded(tokenID, _buildingId, level);
+    }
 
     function getBuildingLevel(uint256 tokenID, uint256 _buildingId) external view override returns (uint256) {
         KingdomData storage data = _tokenData[tokenID];
@@ -107,23 +108,27 @@ contract KingdomNFT is AccessControl, ERC721Enumerable, IKingdom {
     }
 
     // called by invader or master.
-    function destroyKingdom(uint256 tokenID) external override onlyRole(DEFAULT_ADMIN_ROLE) {}
+    function destroyKingdom(uint256 tokenID) external override onlyRole(DEFAULT_ADMIN_ROLE) {
+        _burn(tokenID);
+    }
 
     function setTokenURI(
         uint256 tokenId,
         bytes32 uri,
         string memory data
-    ) external override onlyOwnerOrAdmin(tokenId) {        
+    ) external override onlyTokenOwner(tokenId) {        
         _tokenData[tokenId].kingdomURIs[uri] = data;
+        emit KingdomURIChanged(tokenId, uri, data);
     }
 
     function setTokenURIs(
         uint256 tokenId,
         bytes32[] calldata uri,
         string[] calldata data
-    ) external override onlyOwnerOrAdmin(tokenId) {
+    ) external override onlyTokenOwner(tokenId) {
         for (uint256 i = 0; i < uri.length; i++) {
             _tokenData[tokenId].kingdomURIs[uri[i]] = data[i];
+            emit KingdomURIChanged(tokenId, uri[i], data[i]);
         }
     }
 
@@ -147,10 +152,9 @@ contract KingdomNFT is AccessControl, ERC721Enumerable, IKingdom {
         return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString())) : "";
     }
 
-    modifier onlyOwnerOrAdmin(uint tokenId) {
-        require(_msgSender() == getRuler(tokenId) || 
-            hasRole(DEFAULT_ADMIN_ROLE, _msgSender())
-        , "Only owner or admin can call this function");
+    modifier onlyTokenOwner(uint tokenId) {
+        require(_msgSender() == ownerOf(tokenId)
+        , "Only token owner can call this function");
         _;
     }
 }
