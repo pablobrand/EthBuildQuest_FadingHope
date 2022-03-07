@@ -40,9 +40,11 @@ describe("Kingdom NFT", function () {
     expect(await kingdom.getName(kingdom1)).to.eq(name, "kingdom name should be correct");
     expect(await kingdom.getName(kingdom2)).to.eq("Kingdom 2", "kingdom name should be correct");
     expect(await kingdom.getName(kingdom3)).to.eq("Kingdom 3", "kingdom name should be correct");
+
+    expect(await kingdom.getLastClaimTime(kingdom1)).to.not.eq(0, "last claim time is 0");
   });
 
-  it("kingdom can search token", async function (){
+  it("kingdom can search token", async function () {
     const [owner, player,] = await ethers.getSigners();
     const Factory = await ethers.getContractFactory("KingdomNFT");
     const kingdom = await Factory.deploy(owner.address);
@@ -53,7 +55,7 @@ describe("Kingdom NFT", function () {
     const token = await kingdom.getTokenFromName("Cool Name Ass");
     expect(token).to.not.eq(0, "token should not be 0");
     expect(await kingdom.ownerOf(token)).to.eq(player.address, "player should own token");
-    
+
   })
 
   it("kingdom towncenter should be lv 1", async function () {
@@ -76,16 +78,31 @@ describe("Kingdom NFT", function () {
     // Wall lv 0
     expect(await kingdom.getBuildingLevel(token, 2)).to.eq(0, "wall should be lv 0");
     // Non Exist building lv 0
-    expect(await kingdom.getBuildingLevel(token, 6666)).to.eq(0, "non exist building should be lv 0");
-
-    // Get level list of building
-    const levelList = await kingdom.getBuildingsLevel(token, [0, 2, 3, 5]);
-    expect(levelList[0]).to.eq(1, "towncenter should be lv 1");
-    expect(levelList[1]).to.eq(0, "barrack should be lv 0");
-    expect(levelList[2]).to.eq(0, "wall should be lv 0");
-    expect(levelList[3]).to.eq(0, "non exist building should be lv 0");
-
+    expect(kingdom.getBuildingLevel(token, 6666)).to.be.reverted;
   })
+  
+  it("Master can change building level", async function () {
+    const [owner, player] = await ethers.getSigners();
+    const Factory = await ethers.getContractFactory("KingdomNFT");
+    const kingdom = await Factory.deploy(owner.address);
+    await kingdom.deployed();
+
+    const name = "Cool Name Ass";
+    await kingdom.mint(player.address, name);
+
+    const token = await kingdom.tokenOfOwnerByIndex(player.address, 0);
+
+    await kingdom.setBuildingLevel(token, 0, 10);
+    expect(await kingdom.getBuildingLevel(token, 0)).to.eq(10, "towncenter should be lv 10");
+
+    await kingdom.setBuildingLevel(token, 1, BigNumber.from("5220000000000000006"));
+    expect(await kingdom.getBuildingLevel(token, 1)).to.eq(BigNumber.from("5220000000000000006"), "barrack should be lv 5220000000000000006");
+    
+    await kingdom.setBuildingLevel(token, 2, BigNumber.from("56622"));
+    await kingdom.setBuildingLevel(token, 2, BigNumber.from("0"));
+    expect(await kingdom.getBuildingLevel(token, 2)).to.eq(BigNumber.from("0"), "wall should be lv 0");
+  })
+
   it("should revert empty name", async function () {
     const [owner, player,] = await ethers.getSigners();
     const Factory = await ethers.getContractFactory("KingdomNFT");
@@ -106,33 +123,47 @@ describe("Kingdom NFT", function () {
     await kingdom.mint(player.address, name)
     expect(kingdom.mint(player.address, name)).to.revertedWith("Name already exist");
   })
-  it("master can destroy kingdom", async function () {
+
+  it("master can set occupation", async function () {
     const [owner, player,] = await ethers.getSigners();
     const Factory = await ethers.getContractFactory("KingdomNFT");
     const kingdom = await Factory.deploy(owner.address);
     await kingdom.deployed();
+
+    const name = "Cool Name Ass";
+    await kingdom.mint(player.address, name);
+
+    const token = await kingdom.tokenOfOwnerByIndex(player.address, 0);
+
+    expect(await kingdom.getOccupation(token)).to.be.false;
+    await kingdom.setOccupation(token, true);
+    expect(await kingdom.getOccupation(token)).to.be.true;
+    await kingdom.setOccupation(token, false);
+    expect(await kingdom.getOccupation(token)).to.be.false;
+  })
+  
+  it("master can destroy kingdom", async function () {
+    const [owner, player,attacker] = await ethers.getSigners();
+    const Factory = await ethers.getContractFactory("KingdomNFT");
+    const kingdom = await Factory.deploy(owner.address);
+    await kingdom.deployed();
     await kingdom.mint(player.address, "my king");
-    
+
     const token = await kingdom.getTokenFromName("my king");
     expect(await kingdom.balanceOf(player.address)).to.eq(1, "player should have 1 kingdom");
     await kingdom.destroyKingdom(token);
     expect(await kingdom.balanceOf(player.address)).to.eq(0, "player should have 0 kingdom");
+    
+    expect(kingdom.mint(player.address, "my king")).to.revertedWith("Name already exist");
+    
+    expect(kingdom.mint(player.address, "my king 2")).to.reverted;
+    expect(await kingdom.balanceOf(player.address)).to.eq(1, "player should have 1 kingdom after destroy one and mint 2");
+    const token2 = await kingdom.getTokenFromName("my king 2");
+    expect(kingdom.connect(attacker).destroyKingdom(token2)).to.be.reverted;
+    
   });
 
-  it("master can upgrade kingdom", async function () {
-    const [owner, player,] = await ethers.getSigners();
-    const Factory = await ethers.getContractFactory("KingdomNFT");
-    const kingdom = await Factory.deploy(owner.address);
-    await kingdom.deployed();
-    await kingdom.mint(player.address, "my king");
-    const token = await kingdom.tokenOfOwnerByIndex(player.address, 0);
-    await kingdom.upgradeBuilding(token, 0, 2);
-    expect(await kingdom.getBuildingLevel(token, 0)).to.eq(2, "towncenter should be lv 2");
-
-    await kingdom.upgradeBuilding(token, 2, 100);
-    expect(await kingdom.getBuildingLevel(token, 2)).to.eq(100, "wall should be lv 100");
-  });
-  it("owner can set IPFS URI", async function () {
+  it("owner can update IPFS URI", async function () {
     const [owner, player,] = await ethers.getSigners();
     const Factory = await ethers.getContractFactory("KingdomNFT");
     let kingdom = await Factory.deploy(owner.address);
@@ -141,26 +172,15 @@ describe("Kingdom NFT", function () {
     kingdom = kingdom.connect(player);
 
     const token = await kingdom.tokenOfOwnerByIndex(player.address, 0);
-    const towncenter = (ethers.utils.keccak256(ethers.utils.toUtf8Bytes("TownCenter")));
-    const barrack = (ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Barrack")));
-    const icon = (ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Icon")));
-    await kingdom.setTokenURI(token, towncenter, "QmWATWQ7fVPP2EFGu71UkfnQ7BhAgB6gP1myVENZ6P5S5");
-    await kingdom.setTokenURI(token, barrack, "QmWATWQ7fVPP2EFGu71UkfnQ7BhAgB6gP1myVENZ6P111");
-    await kingdom.setTokenURI(token, icon, "QmWATWQ7fVPP2EFGu71UkfnQ7BhAgB6gP1myVENZ6P333");
-    expect(await kingdom.getTokenURI(token, towncenter)).to.eq("QmWATWQ7fVPP2EFGu71UkfnQ7BhAgB6gP1myVENZ6P5S5", "IPFS URI towncenter should be correct");
-    expect(await kingdom.getTokenURI(token, barrack)).to.eq("QmWATWQ7fVPP2EFGu71UkfnQ7BhAgB6gP1myVENZ6P111", "IPFS URI barrack should be correct");
-    expect(await kingdom.getTokenURI(token, icon)).to.eq("QmWATWQ7fVPP2EFGu71UkfnQ7BhAgB6gP1myVENZ6P333", "IPFS URI icon should be correct");
+    await kingdom.setTokenURI(token, "QmWATWQ7fVPP2EFGu71UkfnQ7BhAgB6gP1myVENZ6P5S5");
+    
+    expect(await kingdom.tokenURI(token)).to.eq("QmWATWQ7fVPP2EFGu71UkfnQ7BhAgB6gP1myVENZ6P5S5", "IPFS URI should be correct");
+    expect(await kingdom.getURIFromName("Kingdom 1")).to.eq(await kingdom.tokenURI(token));
 
-    // Set multiple keys
-    await kingdom.setTokenURIs(token, [towncenter, barrack, icon], ["TCWATWQ7fVPP2EFGu71UkfnQ7BhAgB6gP1myVENZ6P5S5", "BRWATWQ7fVPP2EFGu71UkfnQ7BhAgB6gP1myVENZ6P111", "ICONTWQ7fVPP2EFGu71UkfnQ7BhAgB6gP1myVENZ6P333"]);
-
-
-    // read multiple keys from URI
-    const [towncenterURI, barrackURI, iconURI] = await kingdom.getTokenURIs(token, [towncenter, barrack, icon]);
-    expect(towncenterURI).to.eq("TCWATWQ7fVPP2EFGu71UkfnQ7BhAgB6gP1myVENZ6P5S5", "Array IPFS towncenter should be correct");
-    expect(barrackURI).to.eq("BRWATWQ7fVPP2EFGu71UkfnQ7BhAgB6gP1myVENZ6P111", "Array IPFS barrack should be correct");
-    expect(iconURI).to.eq("ICONTWQ7fVPP2EFGu71UkfnQ7BhAgB6gP1myVENZ6P333", "Array IPFS icon should be correct");
-
+    await kingdom.setTokenURI(token, "5as1d65a1s6d16as1 65asd6 as56 asd");
+    
+    expect(await kingdom.tokenURI(token)).to.eq("5as1d65a1s6d16as1 65asd6 as56 asd", "IPFS URI should be correct");
+    
   })
 
 });

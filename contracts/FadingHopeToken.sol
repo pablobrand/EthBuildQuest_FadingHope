@@ -9,7 +9,6 @@ contract FadingHopeToken is ERC20, AccessControl {
 
     constructor() ERC20("FadingHope", "FH") {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _grantRole(MINTER_ROLE, msg.sender);
     }
 
     function mint(address to, uint256 amount) public onlyRole(MINTER_ROLE) {

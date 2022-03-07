@@ -3,33 +3,54 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./interfaces/IMaster.sol";
-import "./interfaces/IKingdom.sol";
-
+import "./ChatSystem.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./KingdomNFT.sol";
+import "./GameConfig.sol";
 
-/// This master contract have size limit. So split logic of factory to their own file.
+/// This master contract have size limit.
 /// This should implement diamond/facet storage contract but it was too complicated for hackathon.
+
 /// So this contract will handle most of logic in game without modular code.
-
 /// Store most of logic here.
-/// It is the best that master contract only have logic and not store storage.
+/// The master contract have authority to change storage on NFT.
+/// But the complexity to write set/get function for all kind of static storage is too long to implemented.
 
-contract MasterContract is
-    Ownable // , IMaster {
-{
-    IKingdom public kingdomNFT;
+contract MasterContract is Ownable, ChatSystem, GameConfig {
+    KingdomNFT public kingdoms;
     IERC20 public token;
 
-    constructor(IERC20 gameToken) {
+    constructor(IERC20 gameToken, KingdomNFT gameKingdoms) {
         token = gameToken;
-    }
-
-    function setKingdomNFT(IKingdom _kingdomNFT) external onlyOwner {
-        kingdomNFT = _kingdomNFT;
+        kingdoms = gameKingdoms;
     }
 
     function freeMint(address _to, string memory kingdomName) external {
-        kingdomNFT.mint(_to, kingdomName);
+        kingdoms.mint(_to, kingdomName);
     }
+
+    /// To mint new kingdom, only owner of another kingdom can mint.
+    /// Some penalty will be enforced. To have cost of creating new kingdom.
+    function MintPlayerKingdom(
+        uint256 kingdomTokenId,
+        address to,
+        string calldata kingdomName
+    ) external  {
+        require(kingdoms.getRuler(kingdomTokenId) == _msgSender(), "not ruler of kingdom");
+        // TODO : set penalty for creating new kingdom
+        kingdoms.mint(to, kingdomName);
+    }
+
+    function MintNewUnit(uint256 tokenId, bytes32 name) external{}
+
+    /// Logic gameplay function
+    function ClaimKingdomReward(uint256 tokenId) external{}
+
+    function BurnKingdom(uint256 tokenId) external{}
+
+    function AttackKingdom(
+        uint256 fromTokenId,
+        uint256 targetTokenId,
+        string calldata reason
+    ) external{}
 }
