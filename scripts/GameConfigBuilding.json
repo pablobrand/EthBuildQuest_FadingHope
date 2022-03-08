@@ -1,5 +1,12 @@
 [
   {
+    "Lv": "0",
+    "TownCost": "0",
+    "IncomePerSec": "1",
+    "BarrackCost": "0",
+    "WallCost": "0"
+  },
+  {
     "Lv": 1,
     "TownCost": "100",
     "IncomePerSec": "4",

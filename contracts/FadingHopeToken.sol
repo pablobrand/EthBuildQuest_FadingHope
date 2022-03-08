@@ -15,6 +15,10 @@ contract FadingHopeToken is ERC20, AccessControl {
         _mint(to, amount);
     }
 
+    function burn(address account, uint256 amount) public onlyRole(MINTER_ROLE) {
+        _burn(account, amount);
+    }
+
     // For infinite minting, the overflow number is around 10^77.
     function decimals() public pure override returns (uint8) {
         return 57;

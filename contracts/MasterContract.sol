@@ -4,9 +4,8 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./ChatSystem.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./FadingHopeToken.sol";
 import "./KingdomNFT.sol";
-import "./GameConfig.sol";
 
 /// This master contract have size limit.
 /// This should implement diamond/facet storage contract but it was too complicated for hackathon.
@@ -16,13 +15,33 @@ import "./GameConfig.sol";
 /// The master contract have authority to change storage on NFT.
 /// But the complexity to write set/get function for all kind of static storage is too long to implemented.
 
-contract MasterContract is Ownable, ChatSystem, GameConfig {
+contract MasterContract is Ownable, ChatSystem {
     KingdomNFT public kingdoms;
-    IERC20 public token;
+    FadingHopeToken public token;
 
-    constructor(IERC20 gameToken, KingdomNFT gameKingdoms) {
+    constructor(FadingHopeToken gameToken, KingdomNFT gameKingdoms) {
         token = gameToken;
         kingdoms = gameKingdoms;
+    }
+
+
+    // Game Config
+    uint256 public mintKingdomPenalty = 1 days;
+    uint256 public mintKingdomPenaltyMultiplier = 2;
+
+    // Income and building cost will be fixed for now
+    // Calculated through excel formular and store it onchain.
+
+    mapping(uint256 => uint256[256]) public buildingCosts;
+    uint256[256] towncenterIncomePerSecond;
+
+    /// GetPlayerReward based on time passed
+    function calculateTownIncome(uint256 buildingLevel, uint256 timePassed) public view returns (uint256) {
+        return timePassed * towncenterIncomePerSecond[buildingLevel];
+    }
+
+    function getBuildingCost(uint256 buildingId, uint256 buildingLevel) public view returns (uint256) {
+        return buildingCosts[buildingId][buildingLevel];
     }
 
     /// Setup data Function
@@ -61,10 +80,22 @@ contract MasterContract is Ownable, ChatSystem, GameConfig {
         uint256 lastClaimTime = kingdoms.getLastClaimTime(tokenId);
         require(block.timestamp > lastClaimTime, "can't claim reward before claim time");
         uint256 timePassed = block.timestamp - lastClaimTime;
-        uint256 lv = kingdoms.getBuildingLevel(tokenId, KingdomNFT.Building.TownCenter);
-        uint256 reward = timePassed * getPlayerRewards(tokenId, lv);
-        
+        uint256 buildingLv = kingdoms.getBuildingLevel(tokenId,  KingdomNFT.Building.TownCenter);
+        uint256 reward = calculateTownIncome(buildingLv, timePassed);
+
+        // State save
         kingdoms.setClaimTime(tokenId, block.timestamp);
+        token.mint(kingdoms.getRuler(tokenId), reward);
+    }
+
+    function UpgradeKingdomBuilding(uint256 tokenId, uint256 buildingId) external {
+        require(kingdoms.getRuler(tokenId) == _msgSender(), "not ruler of kingdom");
+        uint256 nextLv = kingdoms.getBuildingLevel(tokenId, KingdomNFT.Building(buildingId)) + 1;
+        uint256 cost = getBuildingCost(buildingId, nextLv);
+
+        token.burn(_msgSender(), cost);
+
+        kingdoms.setBuildingLevel(tokenId, buildingId, nextLv);
     }
 
     function BurnKingdom(uint256 tokenId) external {}
