@@ -43,7 +43,6 @@ contract MasterContract is Ownable, ChatSystem, GameConfig {
 
     function MintNewUnit(uint256 tokenId, bytes32 name) external{}
 
-    /// Logic gameplay function
     function ClaimKingdomReward(uint256 tokenId) external{}
 
     function BurnKingdom(uint256 tokenId) external{}

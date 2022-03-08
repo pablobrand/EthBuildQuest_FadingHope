@@ -17,6 +17,6 @@ contract FadingHopeToken is ERC20, AccessControl {
 
     // For infinite minting, the overflow number is around 10^77.
     function decimals() public pure override returns (uint8) {
-        return 64;
+        return 57;
     }
 }
