@@ -50,7 +50,8 @@
     "typescript": "^4.5.2"
   },
   "dependencies": {
-    "fs": "^0.0.1-security"
+    "fs": "^0.0.1-security",
+    "xlsx": "^0.18.3"
   },
   "version": "0.0.0"
 }

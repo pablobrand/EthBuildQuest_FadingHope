@@ -25,6 +25,19 @@ contract MasterContract is Ownable, ChatSystem, GameConfig {
         kingdoms = gameKingdoms;
     }
 
+    /// Setup data Function
+    function SetBuildingCost(uint256 buildingId, uint256[] calldata _upgradeCost) external onlyOwner {
+        for (uint256 i = 0; i < _upgradeCost.length; i++) {
+            buildingCosts[buildingId][i] = _upgradeCost[i];
+        }
+    }
+    /// Setup data Function
+    function SetTownCenterIncome(uint256[] calldata incomePerSec) external onlyOwner {
+        for (uint256 i = 0; i < incomePerSec.length; i++) {
+            towncenterIncomePerSecond[i] = incomePerSec[i];
+        }
+    }
+
     function freeMint(address _to, string memory kingdomName) external {
         kingdoms.mint(_to, kingdomName);
     }
@@ -35,21 +48,29 @@ contract MasterContract is Ownable, ChatSystem, GameConfig {
         uint256 kingdomTokenId,
         address to,
         string calldata kingdomName
-    ) external  {
+    ) external {
         require(kingdoms.getRuler(kingdomTokenId) == _msgSender(), "not ruler of kingdom");
         // TODO : set penalty for creating new kingdom
         kingdoms.mint(to, kingdomName);
     }
 
-    function MintNewUnit(uint256 tokenId, bytes32 name) external{}
+    function MintNewUnit(uint256 tokenId, bytes32 name) external {}
 
-    function ClaimKingdomReward(uint256 tokenId) external{}
+    function ClaimKingdomReward(uint256 tokenId) external {
+        uint256 lastClaimTime = kingdoms.getLastClaimTime(tokenId);
+        require(block.timestamp > lastClaimTime, "can't claim reward before claim time");
+        uint256 timePassed = block.timestamp - lastClaimTime;
 
-    function BurnKingdom(uint256 tokenId) external{}
+        uint256 reward = timePassed * getPlayerRewards(tokenId);
+
+        kingdoms.setClaimTime(tokenId, block.timestamp);
+    }
+
+    function BurnKingdom(uint256 tokenId) external {}
 
     function AttackKingdom(
         uint256 fromTokenId,
         uint256 targetTokenId,
         string calldata reason
-    ) external{}
+    ) external {}
 }
