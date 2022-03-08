@@ -31,6 +31,7 @@ contract MasterContract is Ownable, ChatSystem, GameConfig {
             buildingCosts[buildingId][i] = _upgradeCost[i];
         }
     }
+
     /// Setup data Function
     function SetTownCenterIncome(uint256[] calldata incomePerSec) external onlyOwner {
         for (uint256 i = 0; i < incomePerSec.length; i++) {
@@ -60,9 +61,9 @@ contract MasterContract is Ownable, ChatSystem, GameConfig {
         uint256 lastClaimTime = kingdoms.getLastClaimTime(tokenId);
         require(block.timestamp > lastClaimTime, "can't claim reward before claim time");
         uint256 timePassed = block.timestamp - lastClaimTime;
-
-        uint256 reward = timePassed * getPlayerRewards(tokenId);
-
+        uint256 lv = kingdoms.getBuildingLevel(tokenId, KingdomNFT.Building.TownCenter);
+        uint256 reward = timePassed * getPlayerRewards(tokenId, lv);
+        
         kingdoms.setClaimTime(tokenId, block.timestamp);
     }
 

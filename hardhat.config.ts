@@ -57,6 +57,12 @@ const config: HardhatUserConfig = {
       accounts:
         process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
+    ropsten: {
+      url: process.env.ROPSTEN_INFURA_KEY || "",
+      accounts:
+        process.env.ROPSTEN_DEPLOYER_PRIV_KEY !== undefined ? [process.env.ROPSTEN_DEPLOYER_PRIV_KEY] : [],
+      chainId:3,
+    },
     hardhat: {
       initialBaseFeePerGas: 0,
     },

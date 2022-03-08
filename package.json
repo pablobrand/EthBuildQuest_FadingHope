@@ -6,8 +6,8 @@
     "build": "hardhat compile",
     "build:ts": "yarn rimraf dist && tsc",
     "test": "hardhat test",
-    "verify": "hardhat etherscan-verify --network rinkeby",
-    "deploy": "hardhat deploy-all --network rinkeby",
+    "verify": "hardhat etherscan-verify --network ",
+    "deploy": "hardhat deploy-all --network ",
     "deploy:local": "hardhat deploy-all --network localhost"
   },
   "devDependencies": {
