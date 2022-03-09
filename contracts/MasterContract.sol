@@ -3,10 +3,12 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 import "./ChatSystem.sol";
 import "./FadingHopeToken.sol";
 import "./KingdomNFT.sol";
-
+import "./utils/Minting.sol";
+import "./IMintable.sol";
 /// This master contract have size limit.
 /// This should implement diamond/facet storage contract but it was too complicated for hackathon.
 
@@ -15,13 +17,21 @@ import "./KingdomNFT.sol";
 /// The master contract have authority to change storage on NFT.
 /// But the complexity to write set/get function for all kind of static storage is too long to implemented.
 
-contract MasterContract is Ownable, ChatSystem {
+contract MasterContract is Ownable, ChatSystem, IMintable {
+    using Strings for uint256;
     KingdomNFT public kingdoms;
     FadingHopeToken public token;
-
-    constructor(FadingHopeToken gameToken, KingdomNFT gameKingdoms) {
+    address public imx;
+    constructor(FadingHopeToken gameToken, KingdomNFT gameKingdoms,address _imx) {
         token = gameToken;
         kingdoms = gameKingdoms;
+        imx = _imx;
+    }
+
+    
+    modifier onlyOwnerOrIMX() {
+        require(msg.sender == imx || msg.sender == owner(), "Function can only be called by owner or IMX");
+        _;
     }
 
 
@@ -33,6 +43,7 @@ contract MasterContract is Ownable, ChatSystem {
     // Calculated through excel formular and store it onchain.
 
     mapping(uint256 => uint256[256]) public buildingCosts;
+    mapping(uint256 => bytes) public blueprints;
     uint256[256] towncenterIncomePerSecond;
 
     /// GetPlayerReward based on time passed
@@ -64,6 +75,19 @@ contract MasterContract is Ownable, ChatSystem {
     function freeMintWithURI(address _to, string memory kingdomName, string memory uri) external {
         uint tokenId = kingdoms.mint(_to, kingdomName);
         kingdoms.setTokenURI(tokenId, uri);
+    }
+
+    // ImmutableX mint for L2
+    function mintFor(
+        address user,
+        uint256 quantity,
+        bytes calldata mintingBlob
+    ) external override onlyOwnerOrIMX {
+        
+        require(quantity == 1, "Mintable: invalid quantity");
+        (uint256 id, bytes memory blueprint) = Minting.split(mintingBlob);
+        kingdoms.mint(user, id.toString());
+        blueprints[id] = blueprint;
     }
 
     /// To mint new kingdom, only owner of another kingdom can mint.
@@ -111,3 +135,5 @@ contract MasterContract is Ownable, ChatSystem {
         string calldata reason
     ) external {}
 }
+
+
