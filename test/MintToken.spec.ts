@@ -8,6 +8,11 @@ describe("Minting Test", function () {
     const [master,p1] = await ethers.getSigners();
     const Factory = await ethers.getContractFactory("FadingHopeToken");
     const token = await Factory.deploy();
+
+    
+
+
+
     await token.deployed();
     token.grantRole(await token.MINTER_ROLE(),master.address);
     await token.mint(p1.address, 500000);
