@@ -26,7 +26,9 @@ describe("Kingdom NFT", function () {
     await kingdom.mint(player.address, "Kingdom 3");
 
     const totalKingdomOwned = await kingdom.balanceOf(player.address);
-    expect(totalKingdomOwned).to.eq(3, "player should have total 3 kingdoms");
+    // we can get player tokenId by using owner address
+    
+    expect(totalKingdomOwned).to.eq(3, "player can mint total 3 kingdoms");
     const kingdom1 = await kingdom.tokenOfOwnerByIndex(player.address, 0);
     const kingdom2 = await kingdom.tokenOfOwnerByIndex(player.address, 1);
     const kingdom3 = await kingdom.tokenOfOwnerByIndex(player.address, 2);

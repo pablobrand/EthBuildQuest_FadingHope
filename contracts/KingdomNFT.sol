@@ -45,10 +45,11 @@ contract KingdomNFT is AccessControl, ERC721Enumerable {
     }
 
     struct Kingdom {
+        // kingdom name is unique and cannot change
         uint256 lastRewardClaimTime;
         bool underOccupation; // cut income in half if true.
-        string uri;
-        uint256[] buildingsLevel;
+        uint256[] buildingsLevel; // money value 
+        string uri; // visual value
     }
 
     uint256 private tokenCounter = 0;
@@ -66,7 +67,7 @@ contract KingdomNFT is AccessControl, ERC721Enumerable {
     /// Mint new kingdom token
     /// All building start from level 0.
     /// Towncenter start from lv 1.
-    function mint(address to, string memory kingdomName) external onlyRole(ADMIN_ROLE) {
+    function mint(address to, string memory kingdomName) external onlyRole(ADMIN_ROLE) returns (uint256) {
         require(bytes(kingdomName).length > 0, "Kingdom name cannot be empty");
         require(getTokenFromName(kingdomName) == 0, "Name already exist");
 
@@ -82,6 +83,7 @@ contract KingdomNFT is AccessControl, ERC721Enumerable {
         kingdom.buildingsLevel = new uint256[](3);
         kingdom.buildingsLevel[0] = 1; // TownCenter lv 1
         emit KingdomCreated(tokenId, kingdomName, to);
+        return tokenId;
     }
 
     ///// IKingdom interface //////
@@ -142,6 +144,7 @@ contract KingdomNFT is AccessControl, ERC721Enumerable {
         _burn(tokenID);
     }
 
+    /// every time player change portrait,flag, we push new IPFS URI to kingdom contract.
     function setTokenURI(
         uint256 tokenId,
         

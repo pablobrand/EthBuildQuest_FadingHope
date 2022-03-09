@@ -61,6 +61,10 @@ contract MasterContract is Ownable, ChatSystem {
     function freeMint(address _to, string memory kingdomName) external {
         kingdoms.mint(_to, kingdomName);
     }
+    function freeMintWithURI(address _to, string memory kingdomName, string memory uri) external {
+        uint tokenId = kingdoms.mint(_to, kingdomName);
+        kingdoms.setTokenURI(tokenId, uri);
+    }
 
     /// To mint new kingdom, only owner of another kingdom can mint.
     /// Some penalty will be enforced. To have cost of creating new kingdom.
@@ -76,6 +80,7 @@ contract MasterContract is Ownable, ChatSystem {
 
     function MintNewUnit(uint256 tokenId, bytes32 name) external {}
 
+    /// Claim rewards and Mint token for player
     function ClaimKingdomReward(uint256 tokenId) external {
         uint256 lastClaimTime = kingdoms.getLastClaimTime(tokenId);
         require(block.timestamp > lastClaimTime, "can't claim reward before claim time");
