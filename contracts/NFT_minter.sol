@@ -19,8 +19,6 @@ contract SmartContract is ERC721, Ownable {
     //The struct for each Kingdom
     struct RenderNFT {
         string uri;
-        uint256 hp;
-        uint256 attackDamage;
     }
 
     mapping(uint256 => RenderNFT) _tokenDetails;
@@ -28,18 +26,16 @@ contract SmartContract is ERC721, Ownable {
     mapping(uint256 => address) public nftToHolder;
 
     function mint(
-        string memory uri,
-        uint256 hp,
-        uint256 attackDamage
+        string memory uri
     ) public returns (uint256) {
         uint256 newId = _tokenIds.current();
-        _tokenDetails[newId] = RenderNFT(uri, hp, attackDamage);
+        _tokenDetails[newId] = RenderNFT(uri);
         nftHolderCount[msg.sender] = nftHolderCount[msg.sender] + 1;
         nftToHolder[newId] = msg.sender;
         _mint(msg.sender, newId);
 
         // Where this function is called? You push missing function bruno
-        // _setTokenURI(newId, uri);
+        _setTokenURI(newId, uri);
 
         _tokenIds.increment();
         return newId;
