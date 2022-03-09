@@ -1,29 +1,15 @@
-# EthBuildQuest_FadingHope
+# Fading Hope
 
 Fading Hope team, repo for Eth BuildQuest
 
-To setup project
-`yarn install`
+A complete blockchain P2E game for exploring something new.
 
-Auto Compile contract
-`npx hardhat watch compile`
+## About
 
-Auto test contract
-`npx hardhat watch test`
+[The project concept](https://vad37.github.io/the-dark-forest/)
 
-Manual compile contract. ABI file in artifacts folder
-`npx run hardhat compile`
+[The gameplay loop design](https://www.figma.com/file/9V9fzelGa7Cc6zTaV8lTB1/Fading-Hope-coreloop)
 
-Deploy contract
-`npx run hardhat deploy`
+[Economic Contract concept](https://www.figma.com/file/rFuUYAnKjNLOQeExYQWBTK/Economic-Logic)
 
-Deploy contract on localhost
-
-`npx hardhat node` on different command line
-
-`npx hardhat run scripts/deploy.ts --network localhost` on 2nd command line
-
-Deploy contract on Rinkeby
-`npx hardhat run scripts/deploy.ts --network rinkeby`
-
-You need to setup `.env` file before deploy live
+[War Contract concept](https://www.figma.com/file/2dcJTmAMABBW33IYYWXfpP/War-Diplomacy-Logic?node-id=0%3A1)
