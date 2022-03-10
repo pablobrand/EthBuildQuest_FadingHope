@@ -16,23 +16,23 @@ import {
 import { CTA, Brand, Navbar } from "./components";
 import "./App.css";
 import { GetContracts } from "./utils/contracts";
-import { FadingHopeToken,  KingdomNFT,  MasterContract } from "./utils/typechain";
+import { FadingHopeToken, KingdomNFT, MasterContract } from "./utils/typechain";
 function App() {
-  let signer:ethers.providers.JsonRpcSigner;
-  let master:MasterContract;
-  let token:FadingHopeToken; 
-  let kingdom:KingdomNFT;
-   
-  window.onload = ()=>onLoadWeb();
+  let signer: ethers.providers.JsonRpcSigner;
+  let master: MasterContract;
+  let token: FadingHopeToken;
+  let kingdom: KingdomNFT;
+
+  window.onload = () => onLoadWeb();
   const onLoadWeb = async () => {
     console.log("website loaded");
     await (window as any).ethereum.request({
-      method: 'wallet_switchEthereumChain',
-      params: [{ chainId: '0x3' }], // chainId must be in hexadecimal numbers
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: "0x3" }], // chainId must be in hexadecimal numbers
     });
-    [signer,master, token, kingdom] = await GetContracts();
+    [signer, master, token, kingdom] = await GetContracts();
     console.log("attaching contract ");
-  }
+  };
 
   const { runContractFunction, isLoading } = useWeb3Contract({
     functionName: "freeMintWithURI",
@@ -48,8 +48,9 @@ function App() {
     // const provider = new ethers.providers.Web3Provider((window as any).ethereum , "any");
     await master.freeMintWithURI(
       await signer.getAddress(),
-      document.getElementsByClassName("kingdomName").namedItem("kingdomName")?.textContent || "asdsadas",
-      document.getElementById("URI")?.textContent || "",
+      document.getElementsByClassName("kingdomName").namedItem("kingdomName")
+        ?.textContent || "asdsadas",
+      document.getElementById("URI")?.textContent || ""
     );
   };
   const {
@@ -78,6 +79,35 @@ function App() {
     await logout();
     console.log("logged out");
   };
+
+  const refresh = async () => {
+    const playerAddress = await signer.getAddress();
+    setText("owner", "owner: " + playerAddress);
+    const tokenOwnedCount = await kingdom.balanceOf(playerAddress);
+    if(tokenOwnedCount.gt(0)){
+      const kingdomId = await kingdom.tokenOfOwnerByIndex( playerAddress,0);
+      const kingdomName = await kingdom.getName(kingdomId);
+      setText("tokenId", "tokenId: " + kingdomId.toNumber());
+      setText("kingdomName", "kingdom: " + kingdomName);
+      const townLevel = await kingdom.getBuildingLevel(kingdomId, 0);
+      setText("townLevel", "townLevel: " + townLevel.toNumber());
+      const lastClaimTime = await kingdom.getLastClaimTime(kingdomId);
+      setText("tc_lastClaimTime", "lastClaimTime: " + lastClaimTime.toNumber());
+      
+
+    }else {
+      setText("kingdomName", "You control no kingdom. Mint some.");
+    }
+    
+
+  };
+
+  const claimReward = async () => { console.log("claiming") };
+
+  function setText(id: string, value: string) {
+    const doc = document.getElementById(id);
+    if (doc != null) doc.textContent = value;
+  }
 
   const htmlWeb = (
     <div className="App">
@@ -159,20 +189,19 @@ function App() {
           </Card>
           <Footer />
         </div>
-        {/* <div>
-        <Button onClick={refresh}>refresh profile</Button>
-        <p id="player">Player Profile:</p>
-        <p id="owner">owner:</p>
-        <p id="tokenId">tokenId:</p>        
-        <p id="Kingdom_name">Kingdom:</p>        
-        <p id="towncenter">Town Center lv 0</p>
-        <p id="towncenter_income">Income: </p>
-        <p id="towncenter_rewards">Pending rewards</p>
-        <Button onClick={claimReward}>Claim</Button>
-        </div> */}
+        <div>
+          <Button onClick={refresh}>refresh profile</Button>
+          <p id="player">Player Profile:</p>
+          <p id="owner">owner:</p>
+          <p id="tokenId">tokenId:</p>
+          <p id="Kingdom_name">Kingdom:</p>
+          <p id="towncenter">Town Center lv 0</p>
+          <p id="tc_lastClaimTime"></p>
+          <p id="towncenter_income">Income: </p>
+          <p id="towncenter_rewards">Pending rewards</p>
+          <Button onClick={claimReward}>Claim</Button>
+        </div>
       </div>
-     
-      
     </div>
   );
   return htmlWeb;
