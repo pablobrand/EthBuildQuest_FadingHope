@@ -1,7 +1,6 @@
 import React from 'react';
-import logo from './logo.svg';
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Card, Typography, Button } from "antd";
+import { Card, Typography, Button, Form } from "antd";
 import { useMoralis, useWeb3Contract } from "react-moralis";
 import abi from "../src/contracts/sla.json";
 import {
@@ -14,7 +13,7 @@ import {
 } from "./containers";
 import { CTA, Brand, Navbar } from "./components";
 import './App.css';
-
+import FormMint from "./components/uploadfile/MintingForm"
 
 function App() {
 
@@ -85,6 +84,7 @@ function App() {
           textAlign: "center",
         }}
       >
+        
         <Typography.Title level={3}>NFT Minter</Typography.Title>
         <img
           src="https://ipfs.moralis.io:2053/ipfs/QmebxzVBtcEznrZgSUxorrdL8Q1XEbiyRaGxHUuwWUoF1o/images/0.png"
@@ -104,6 +104,7 @@ function App() {
         <input id="kingdomName" type="text" className="form-control" placeholder="Kingdom Name" aria-label="kingdomName" aria-describedby="basic-addon1"/>
         <input id="URI" type="text" className="form-control" placeholder="URI" aria-label="URI" aria-describedby="basic-addon1"/>
       </Card>
+      <FormMint/>
         <Footer />
       </div>
       </div>
