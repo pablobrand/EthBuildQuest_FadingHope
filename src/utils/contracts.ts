@@ -6,9 +6,9 @@ import { FadingHopeToken, FadingHopeToken__factory, KingdomNFT, KingdomNFT__fact
 // deploying "FadingHopeToken"  0xa187379BEF6DFdCa436115d1804A83C823FB4B99 with 2235903 gas
 // deploying "KingdomNFT" 0x495392ec53Ea7FcdF1f497f1Eaf68401224d6eEa with 4188863 gas
 // deploying "MasterContract" 0xA0B434f834b7fa9CD4d28923E6f56a9035F52604 with 2620095 gas
-const fadingHopeAddress = "0xa187379BEF6DFdCa436115d1804A83C823FB4B99";
-const kingdomNFTAddress = "0x495392ec53Ea7FcdF1f497f1Eaf68401224d6eEa";
-const masterContractAddress = "0xA0B434f834b7fa9CD4d28923E6f56a9035F52604";
+export const fadingHopeAddress = "0xa187379BEF6DFdCa436115d1804A83C823FB4B99";
+export const kingdomNFTAddress = "0x495392ec53Ea7FcdF1f497f1Eaf68401224d6eEa";
+export const masterContractAddress = "0xA0B434f834b7fa9CD4d28923E6f56a9035F52604";
 
 
 interface BuildingCost {
