@@ -17,23 +17,14 @@ import "./IMintable.sol";
 /// The master contract have authority to change storage on NFT.
 /// But the complexity to write set/get function for all kind of static storage is too long to implemented.
 
-contract MasterContract is Ownable, ChatSystem, IMintable {
+contract MasterContract is Ownable, ChatSystem {
     using Strings for uint256;
     KingdomNFT public kingdoms;
     FadingHopeToken public token;
-    address public imx;
-    constructor(FadingHopeToken gameToken, KingdomNFT gameKingdoms,address _imx) {
+    constructor(FadingHopeToken gameToken, KingdomNFT gameKingdoms) {
         token = gameToken;
         kingdoms = gameKingdoms;
-        imx = _imx;
     }
-
-    
-    modifier onlyOwnerOrIMX() {
-        require(msg.sender == imx || msg.sender == owner(), "Function can only be called by owner or IMX");
-        _;
-    }
-
 
     // Game Config
     uint256 public mintKingdomPenalty = 1 days;
@@ -75,19 +66,6 @@ contract MasterContract is Ownable, ChatSystem, IMintable {
     function freeMintWithURI(address _to, string memory kingdomName, string memory uri) external {
         uint tokenId = kingdoms.mint(_to, kingdomName);
         kingdoms.setTokenURI(tokenId, uri);
-    }
-
-    // ImmutableX mint for L2
-    function mintFor(
-        address user,
-        uint256 quantity,
-        bytes calldata mintingBlob
-    ) external override onlyOwnerOrIMX {
-        
-        require(quantity == 1, "Mintable: invalid quantity");
-        (uint256 id, bytes memory blueprint) = Minting.split(mintingBlob);
-        kingdoms.mint(user, id.toString());
-        blueprints[id] = blueprint;
     }
 
     /// To mint new kingdom, only owner of another kingdom can mint.

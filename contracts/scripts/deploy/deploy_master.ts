@@ -1,6 +1,6 @@
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
-
+import {AttachAndSetupMasterContract} from "../utils";
 const deploy: DeployFunction = async function (
   hre: HardhatRuntimeEnvironment,
 ) {
@@ -28,16 +28,7 @@ const deploy: DeployFunction = async function (
     log: true
   });
 
-  const tokenCT = (await ethers.getContractFactory("FadingHopeToken")).attach(token.address);
-  console.log("set master contract to minter role");
-  await tokenCT.grantRole(await tokenCT.MINTER_ROLE(), master.address, { gasLimit: 1000000 };
-  
-
-  const kingdomCT = (await ethers.getContractFactory("KingdomNFT")).attach(kingdom.address);
-  console.log("set master contract to admin role");
-  await (await kingdomCT.grantRole(await kingdomCT.ADMIN_ROLE(), master.address, { gasLimit: 1000000 })).wait();
-  console.log("check master has minter role:", await tokenCT.hasRole(await tokenCT.MINTER_ROLE(), master.address));
-  console.log("check master has admin role:", await kingdomCT.hasRole(await kingdomCT.ADMIN_ROLE(), master.address));
+  AttachAndSetupMasterContract(token.address, kingdom.address, master.address);
 };
 
 deploy.tags = ['hackathon']
