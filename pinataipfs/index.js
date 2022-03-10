@@ -24,7 +24,7 @@ pinata
   .pinFileToIPFS(readableStreamForFile, options)
   .then((result) => {
     //handle results here
-    console.log(result);
+    console.log("https://gateway.pinata.cloud/ipfs/"+result.IpfsHash);
   })
   .catch((err) => {
     //handle error here
