@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { RiMenu3Line, RiCloseLine } from 'react-icons/ri';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Button from 'react-bootstrap/Button';
+import ai from "../../assets/ai.jpg";
 import logo from '../../assets/fh.png';
 import './navbar.css';
 
@@ -31,9 +32,6 @@ const Navbar = () => {
             <a href="#about">About</a>
           </p>
         </div>
-      </div>
-      <div>
-        <Button>Play & Earn</Button>
       </div>
       <div className="gpt3__navbar-menu">
         {toggleMenu ? (

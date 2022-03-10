@@ -1,5 +1,7 @@
 import React from 'react';
 import logo from './logo.svg';
+import Button from "react-bootstrap/Button";
+import "bootstrap/dist/css/bootstrap.min.css";
 import {
   Footer,
   Blog,
@@ -38,13 +40,18 @@ function App() {
   return (
     <div className="App">
       <div className="gradient__bg">
-        <Navbar />
-        <div>
-          • <button onClick={login}>Moralis Metamask Login</button>•{" "}
-          <button onClick={logOut} disabled={isAuthenticating}>
-            Logout
-          </button>
-          •{" "}
+        <div className="gpt3__navbar">
+          <div className="gpt3__navbar-links">
+            <div className="gpt3__navbar-links_logo">
+              <Navbar />
+            </div>
+          </div>
+          <div>
+            <Button onClick={login}>Play & Earn</Button>
+            <Button onClick={logOut} disabled={isAuthenticating}>
+              Logout
+            </Button>
+          </div>
         </div>
         <Header />
 

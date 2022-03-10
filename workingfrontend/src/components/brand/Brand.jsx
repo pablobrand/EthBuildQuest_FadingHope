@@ -5,55 +5,67 @@ import { pinata, valist, moralis, ipfs, chainlink, immutable } from './imports';
 import './brand.css';
 
 const Brand = () => (
-  <div align="center" width="150" height="150">
+  <div align="center" width="150" height="150" borderRadius="50%">
     <ButtonGroup size="small" aria-label="small button group" align="center">
-      <Button title="Pinata">
-        <img
-          src={pinata}
-          width="150"
-          height="150"
-          style={{ width: 150, height: 150, borderRadius: 200 / 2 }}
-        />
+      <Button title="Pinata" borderRadius="50%">
+        <a href="https://www.pinata.cloud/" target="_blank">
+          <img
+            src={pinata}
+            width="150"
+            height="150"
+            style={{ width: 150, height: 150, borderRadius: 200 / 2 }}
+          />
+        </a>
       </Button>
       <Button title="Valist">
-        <img
-          src={valist}
-          width="150"
-          height="150"
-          style={{ width: 150, height: 150, borderRadius: 200 / 2 }}
-        />
+        <a href="https://valist.io/" target="_blank">
+          <img
+            src={valist}
+            width="150"
+            height="150"
+            style={{ width: 150, height: 150, borderRadius: 200 / 2 }}
+          />
+        </a>
       </Button>
       <Button title="Moralis">
-        <img
-          src={moralis}
-          width="150"
-          height="150"
-          style={{ width: 150, height: 150, borderRadius: 200 / 2 }}
-        />
+        <a href="https://moralis.io/" target="_blank">
+          <img
+            src={moralis}
+            width="150"
+            height="150"
+            style={{ width: 150, height: 150, borderRadius: 200 / 2 }}
+          />
+        </a>
       </Button>
       <Button title="IPFS">
-        <img
-          src={ipfs}
-          width="150"
-          height="150"
-          style={{ width: 150, height: 150, borderRadius: 200 / 2 }}
-        />
+        <a href="https://ipfs.io/" target="_blank">
+          <img
+            src={ipfs}
+            width="150"
+            height="150"
+            style={{ width: 150, height: 150, borderRadius: 200 / 2 }}
+          />
+        </a>
       </Button>
       <Button title="Chainlink">
-        <img
-          src={chainlink}
-          width="150"
-          height="150"
-          style={{ width: 150, height: 150, borderRadius: 200 / 2 }}
-        />
+        <a href="https://chain.link/" target="_blank">
+          <img
+            src={chainlink}
+            width="150"
+            height="150"
+            style={{ width: 150, height: 150, borderRadius: 200 / 2 }}
+          />
+        </a>
       </Button>
       <Button title="Immutable X">
-        <img
-          src={immutable}
-          width="150"
-          height="150"
-          style={{ width: 150, height: 150, borderRadius: 200 / 2 }}
-        />
+        <a href="https://www.immutable.com/" target="_blank">
+          <img
+            src={immutable}
+            width="150"
+            height="150"
+            style={{ width: 150, height: 150, borderRadius: 200 / 2 }}
+          />
+        </a>
       </Button>
     </ButtonGroup>
   </div>

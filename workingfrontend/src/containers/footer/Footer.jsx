@@ -1,14 +1,21 @@
 import React from 'react';
 import './footer.css';
+import { Button } from 'react-bootstrap';
 
-const Footer = () => (
-  <div className="gpt3__footer section__padding">
-    <div className="gpt3__footer-heading">
-      <h1 className="gradient__text">
-        Do you want to step into the future of gaming before others?
-      </h1>
-    </div>
-  </div>
+const Footer = () => {
+return (
+  <form>
+    <label>
+      Name:
+      <input type="text" name="name" />
+    </label>
+    <label>
+      File:
+      <input type="file" name="file" />
+    </label>
+    <Button>Upload</Button>
+  </form>
 );
+};
 
 export default Footer;
