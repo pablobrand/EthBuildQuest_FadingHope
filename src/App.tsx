@@ -15,7 +15,7 @@ import {
 } from "./containers";
 import { CTA, Brand, Navbar } from "./components";
 import "./App.css";
-import {GetContracts} from "./utils/contracts";
+import { GetContracts } from "./utils/contracts";
 
 function App() {
   const { runContractFunction, isLoading } = useWeb3Contract({
@@ -29,9 +29,13 @@ function App() {
     },
   });
   const mintDirectly = async () => {
-    const provider = new ethers.providers.Web3Provider((window as any).ethereum , "any");
-    const [master, token, kingdom] = await GetContracts(provider);
-    await master.freeMintWithURI("0x87e6eEDeb0494e3E3235F61AE4Cd393ef94F2FB2", "kingdomName","pldosksmmm");
+    // const provider = new ethers.providers.Web3Provider((window as any).ethereum , "any");
+    const [signer,master, token, kingdom] = await GetContracts();
+    await master.freeMintWithURI(
+      await signer.getAddress(),
+      document.getElementsByClassName("kingdomName").namedItem("kingdomName")?.textContent || "asdsadas",
+      document.getElementById("URI")?.textContent || "",
+    );
   };
   const {
     authenticate,

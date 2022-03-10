@@ -69,9 +69,10 @@ export function GetIncomeArray(): BigNumber[] {
 }
 
 
-export async function GetContracts(provider:ethers.providers.Web3Provider): Promise<[MasterContract, FadingHopeToken, KingdomNFT]> {
+export async function GetContracts(): Promise<[ethers.providers.JsonRpcSigner,MasterContract, FadingHopeToken, KingdomNFT]> {
     // let window: any;
     // const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+    const provider = new ethers.providers.Web3Provider((window as any).ethereum , "any");
     // Prompt user for account connections
     await provider.send("eth_requestAccounts", []);
     const signer = provider.getSigner();
@@ -80,5 +81,5 @@ export async function GetContracts(provider:ethers.providers.Web3Provider): Prom
     const token = FadingHopeToken__factory.connect(fadingHopeAddress, signer);
     const kingdom = KingdomNFT__factory.connect(kingdomNFTAddress, signer);
     const master = MasterContract__factory.connect(masterContractAddress, signer);
-    return [master, token, kingdom];
+    return [signer,master, token, kingdom];
 }
