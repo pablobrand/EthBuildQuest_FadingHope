@@ -3,7 +3,8 @@ import logo from "./logo.svg";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Card, Typography, Button } from "antd";
 import { useMoralis, useWeb3Contract } from "react-moralis";
-import { abi } from "../src/contracts/sla.json";
+import abi from "../src/contracts/MasterContract.json";
+import { ethers } from "ethers";
 import {
   Footer,
   Blog,
@@ -14,21 +15,24 @@ import {
 } from "./containers";
 import { CTA, Brand, Navbar } from "./components";
 import "./App.css";
-import "./utils/contracts";
+import {GetContracts} from "./utils/contracts";
 
 function App() {
-
   const { runContractFunction, isLoading } = useWeb3Contract({
-    functionName: "freeMintURI",
+    functionName: "freeMintWithURI",
     abi,
-    contractAddress: "0xC34541DEec223F4a24bD7Eeda28D56cA16c927fd",
+    contractAddress: "0x4AEAd9bEcF5F7794dF6618885c283F68b4a0C848",
     params: {
-      account: "",
+      account: "0x87e6eEDeb0494e3E3235F61AE4Cd393ef94F2FB2",
       kingdomName: document.getElementsByClassName("kingdomName"),
       uri: "pldosksmmm",
     },
   });
-
+  const mintDirectly = async () => {
+    const provider = new ethers.providers.Web3Provider((window as any).ethereum , "any");
+    const [master, token, kingdom] = await GetContracts(provider);
+    await master.freeMintWithURI("0x87e6eEDeb0494e3E3235F61AE4Cd393ef94F2FB2", "kingdomName","pldosksmmm");
+  };
   const {
     authenticate,
     isAuthenticated,
@@ -106,6 +110,16 @@ function App() {
               onClick={() => runContractFunction()}
             >
               MINT
+            </Button>
+            <Button
+              type="primary"
+              shape="round"
+              size="large"
+              style={{ width: "100%" }}
+              loading={isLoading}
+              onClick={() => mintDirectly()}
+            >
+              MINT directly
             </Button>
             <input
               id="kingdomName"

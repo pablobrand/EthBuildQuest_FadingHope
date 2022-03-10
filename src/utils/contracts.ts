@@ -1,5 +1,5 @@
 import { BigNumber, ethers } from "ethers";
-import * as fs from 'fs';
+// import * as fs from 'fs';
 
 
 import { FadingHopeToken, FadingHopeToken__factory, KingdomNFT, KingdomNFT__factory, MasterContract, MasterContract__factory } from "./typechain";
@@ -31,19 +31,19 @@ export function GetGameConfig(): GameConfig {
 
     const gc = new GameConfig();
 
-    const file = './GameConfigBuilding.json';
-    const jsonString = fs.readFileSync(file, 'utf8');
-    const json = JSON.parse(jsonString);
-    for (let i = 0; i < json.length; i++) {
-        const bc: BuildingCost = {
-            level: json[i].Lv,
-            TownCost: BigNumber.from(json[i].TownCost),
-            IncomePerSec: BigNumber.from(json[i].IncomePerSec),
-            BarrackCost: BigNumber.from(json[i].BarrackCost),
-            WallCost: BigNumber.from(json[i].WallCost),
-        };
-        gc.buildingLevelConfig[bc.level] = bc;
-    }
+    // const file = './GameConfigBuilding.json';
+    // const jsonString = fs.readFileSync(file, 'utf8');
+    // const json = JSON.parse(jsonString);
+    // for (let i = 0; i < json.length; i++) {
+    //     const bc: BuildingCost = {
+    //         level: json[i].Lv,
+    //         TownCost: BigNumber.from(json[i].TownCost),
+    //         IncomePerSec: BigNumber.from(json[i].IncomePerSec),
+    //         BarrackCost: BigNumber.from(json[i].BarrackCost),
+    //         WallCost: BigNumber.from(json[i].WallCost),
+    //     };
+    //     gc.buildingLevelConfig[bc.level] = bc;
+    // }
     return gc;
 }
 
@@ -69,9 +69,9 @@ export function GetIncomeArray(): BigNumber[] {
 }
 
 
-export async function GetContracts(): Promise<[MasterContract, FadingHopeToken, KingdomNFT]> {
-    let window: any;
-    const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+export async function GetContracts(provider:ethers.providers.Web3Provider): Promise<[MasterContract, FadingHopeToken, KingdomNFT]> {
+    // let window: any;
+    // const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
     // Prompt user for account connections
     await provider.send("eth_requestAccounts", []);
     const signer = provider.getSigner();
