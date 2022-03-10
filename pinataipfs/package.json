@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "@pinata/ipfs-gateway-tools": "^1.2.0",
+    "@pinata/sdk": "^1.1.23",
+    "moralis": "^1.3.5"
+  },
+  "name": "moralispinataplugintest",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
