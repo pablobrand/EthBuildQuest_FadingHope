@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { BigNumber } from "ethers";
 import { ethers } from "hardhat";
-import { DeployMasterContract } from "./utils.spec";
+import { DeployMasterContract } from "../scripts/utils";
 import { GetIncomeArray, GetBarracksCostArray, GetTownCenterCostArray } from "../scripts/utils";
 
 describe("Master contract function", function () {
@@ -12,6 +12,7 @@ describe("Master contract function", function () {
     expect(await master.getBuildingCost(0, 10)).to.not.eq(BigNumber.from(0));
     expect(await master.getBuildingCost(1, 16)).to.not.eq(BigNumber.from(0));
   });
+
   it("Player can claim rewards", async function () {
     const [owner, player] = await ethers.getSigners();
     const [master, token, kingdom] = await DeployMasterContract(owner.address);
@@ -25,6 +26,7 @@ describe("Master contract function", function () {
     await master.ClaimKingdomReward(nft);
     expect(await token.balanceOf(player.address)).to.not.eq(0);
   })
+
   it("Player can upgrade building", async function () {
     const [owner, player] = await ethers.getSigners();
     let [master, token, kingdom] = await DeployMasterContract(owner.address);
@@ -97,5 +99,20 @@ describe("Master contract function", function () {
     await master.ClaimKingdomReward(nft);
     expect(await (await token.balanceOf(player.address)).toNumber()).to.approximately(balance2.add(income[3].mul(timePassed2)).toNumber() ,income[3].toNumber());
 
+  })
+
+  it("Player can freemint", async function (){
+    const [owner, player] = await ethers.getSigners();
+    const [master, token, kingdom] = await DeployMasterContract(owner.address);
+
+    await master.freeMint(player.address, "good");
+    const nft = await kingdom.getTokenFromName("good");
+    expect(await kingdom.getRuler(nft)).to.eq(player.address);
+
+    await master.freeMintWithURI(player.address, "good2","someCoolString");
+    const nft2 = await kingdom.getTokenFromName("good2");
+    expect(await kingdom.getRuler(nft2)).to.eq(player.address);
+    expect(await kingdom.getURIFromName("good2")).to.eq("someCoolString");
+    expect(await kingdom.tokenURI(nft2)).to.eq("someCoolString");
   })
 });

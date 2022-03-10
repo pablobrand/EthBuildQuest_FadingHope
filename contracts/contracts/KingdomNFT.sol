@@ -31,8 +31,8 @@ contract KingdomNFT is AccessControl, ERC721Enumerable {
         return super.supportsInterface(interfaceId);
     }
 
-    modifier onlyTokenOwner(uint256 tokenId) {
-        require(_msgSender() == ownerOf(tokenId), "Only token owner can call this function");
+    modifier onlyTokenOwnerOrAdmin(uint256 tokenId) {
+        require(_msgSender() == ownerOf(tokenId)  || hasRole(ADMIN_ROLE,_msgSender()) , "Only token owner can call this function");
         _;
     }
 
@@ -146,10 +146,9 @@ contract KingdomNFT is AccessControl, ERC721Enumerable {
 
     /// every time player change portrait,flag, we push new IPFS URI to kingdom contract.
     function setTokenURI(
-        uint256 tokenId,
-        
+        uint256 tokenId,        
         string memory newUri
-    ) external onlyTokenOwner(tokenId) {
+    ) external onlyTokenOwnerOrAdmin(tokenId) {
         _tokenData[tokenId].uri = newUri;
         emit KingdomURIChanged(tokenId,  newUri);
     }

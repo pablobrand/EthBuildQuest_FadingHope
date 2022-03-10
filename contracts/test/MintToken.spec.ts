@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { BigNumber } from "ethers";
 import { ethers } from "hardhat";
-import { DeployMasterContract } from "./utils.spec";
+import { DeployMasterContract } from "../scripts/utils";
 describe("Minting Test", function () {
   it("Master can mint token to anyone", async function () {
     
