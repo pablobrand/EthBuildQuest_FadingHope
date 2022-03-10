@@ -1,6 +1,6 @@
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
-import {AttachAndSetupMasterContract} from "../utils";
+import { AttachAndSetupMasterContract } from "../utils";
 const deploy: DeployFunction = async function (
   hre: HardhatRuntimeEnvironment,
 ) {
@@ -24,7 +24,7 @@ const deploy: DeployFunction = async function (
   // Ropsten IMX address: 0x6C21EC8DE44AE44D0992ec3e2d9f1aBb6207D864
   const master = await deploy("MasterContract", {
     from: deployer,
-    args: [token.address,kingdom.address, "0x6C21EC8DE44AE44D0992ec3e2d9f1aBb6207D864"],
+    args: [token.address, kingdom.address],
     log: true
   });
 
