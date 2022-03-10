@@ -9,7 +9,7 @@ import { abi } from "../contracts/sla.json";
 export default function QuickStart() {
   const { account } = useMoralis();
   const { runContractFunction, isLoading } = useWeb3Contract({
-    functionName: "freeMintURI",
+    functionName: "freeMintWithURI",
     abi,
     contractAddress: "0x77d580D2ac51070aE5AF364a32c73F94C6fA082d",
     params: {
