@@ -11,7 +11,7 @@ export default function QuickStart() {
   const { runContractFunction, isLoading } = useWeb3Contract({
     functionName: "freeMintURI",
     abi,
-    contractAddress: "0xC34541DEec223F4a24bD7Eeda28D56cA16c927fd",
+    contractAddress: "0x77d580D2ac51070aE5AF364a32c73F94C6fA082d",
     params: {
       account,
       kingdomName: document.getElementById('kingdomName').setAttribute("disabled", null),
