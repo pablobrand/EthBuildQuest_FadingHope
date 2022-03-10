@@ -16,8 +16,24 @@ import {
 import { CTA, Brand, Navbar } from "./components";
 import "./App.css";
 import { GetContracts } from "./utils/contracts";
-
+import { FadingHopeToken,  KingdomNFT,  MasterContract } from "./utils/typechain";
 function App() {
+  let signer:ethers.providers.JsonRpcSigner;
+  let master:MasterContract;
+  let token:FadingHopeToken; 
+  let kingdom:KingdomNFT;
+   
+  window.onload = ()=>onLoadWeb();
+  const onLoadWeb = async () => {
+    console.log("website loaded");
+    await (window as any).ethereum.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: '0x3' }], // chainId must be in hexadecimal numbers
+    });
+    [signer,master, token, kingdom] = await GetContracts();
+    console.log("attaching contract ");
+  }
+
   const { runContractFunction, isLoading } = useWeb3Contract({
     functionName: "freeMintWithURI",
     abi,
@@ -30,7 +46,6 @@ function App() {
   });
   const mintDirectly = async () => {
     // const provider = new ethers.providers.Web3Provider((window as any).ethereum , "any");
-    const [signer,master, token, kingdom] = await GetContracts();
     await master.freeMintWithURI(
       await signer.getAddress(),
       document.getElementsByClassName("kingdomName").namedItem("kingdomName")?.textContent || "asdsadas",
@@ -156,6 +171,8 @@ function App() {
         <Button onClick={claimReward}>Claim</Button>
         </div> */}
       </div>
+     
+      
     </div>
   );
   return htmlWeb;
