@@ -1,7 +1,7 @@
 import { BigNumber, ethers } from "ethers";
 // import * as fs from 'fs';
 
-
+import * as config from './GameConfigBuilding.json';
 import { FadingHopeToken, FadingHopeToken__factory, KingdomNFT, KingdomNFT__factory, MasterContract, MasterContract__factory } from "./typechain";
 // deploying "FadingHopeToken"  0xa187379BEF6DFdCa436115d1804A83C823FB4B99 with 2235903 gas
 // deploying "KingdomNFT" 0x495392ec53Ea7FcdF1f497f1Eaf68401224d6eEa with 4188863 gas
@@ -30,20 +30,17 @@ export function GetGameConfig(): GameConfig {
     // convert json file to class
 
     const gc = new GameConfig();
-
-    // const file = './GameConfigBuilding.json';
-    // const jsonString = fs.readFileSync(file, 'utf8');
-    // const json = JSON.parse(jsonString);
-    // for (let i = 0; i < json.length; i++) {
-    //     const bc: BuildingCost = {
-    //         level: json[i].Lv,
-    //         TownCost: BigNumber.from(json[i].TownCost),
-    //         IncomePerSec: BigNumber.from(json[i].IncomePerSec),
-    //         BarrackCost: BigNumber.from(json[i].BarrackCost),
-    //         WallCost: BigNumber.from(json[i].WallCost),
-    //     };
-    //     gc.buildingLevelConfig[bc.level] = bc;
-    // }
+    const array = config;
+    for (let i = 0; i < array.length; i++) {
+        const bc: BuildingCost = {
+            level: array[i].Lv as number,
+            TownCost: BigNumber.from(array[i].TownCost),
+            IncomePerSec: BigNumber.from(array[i].IncomePerSec),
+            BarrackCost: BigNumber.from(array[i].BarrackCost),
+            WallCost: BigNumber.from(array[i].WallCost),
+        };
+        gc.buildingLevelConfig[bc.level] = bc;
+    }
     return gc;
 }
 

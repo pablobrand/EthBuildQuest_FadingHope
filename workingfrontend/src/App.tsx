@@ -4,7 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Card, Typography, Button } from "antd";
 import { useMoralis, useWeb3Contract } from "react-moralis";
 import abi from "../src/contracts/MasterContract.json";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import {
   Footer,
   Blog,
@@ -15,14 +15,29 @@ import {
 } from "./containers";
 import { CTA, Brand, Navbar } from "./components";
 import "./App.css";
-import { GetContracts } from "./utils/contracts";
+import { GetContracts, GetGameConfig } from "./utils/contracts";
 import { FadingHopeToken, KingdomNFT, MasterContract } from "./utils/typechain";
+
+class PlayerKingdom {
+  owner!: string;
+  balance!: BigNumber;
+  tokenId!: BigNumber;
+  name!: string;
+  uri!: string;
+  metadata!: string;
+  townCenterLv!: BigNumber;
+  lastRewardTime!: BigNumber;
+}
+
 function App() {
   let signer: ethers.providers.JsonRpcSigner;
   let master: MasterContract;
   let token: FadingHopeToken;
   let kingdom: KingdomNFT;
-
+  let currentKingdom: PlayerKingdom = new PlayerKingdom();
+  const gameConfig = GetGameConfig();
+  
+  // Set default value
   window.onload = () => onLoadWeb();
   const onLoadWeb = async () => {
     console.log("website loaded");
@@ -32,7 +47,21 @@ function App() {
     });
     [signer, master, token, kingdom] = await GetContracts();
     console.log("attaching contract ");
+    await refresh();
   };
+
+// Update text pending reward every 0.1s
+  setInterval(() => {
+    updatePendingRewards();
+}, 1000);  
+  
+  function updatePendingRewards() {
+    if(currentKingdom == undefined || currentKingdom.lastRewardTime == null || currentKingdom.townCenterLv.lt(1)) return;    
+    const timeNow = Date.now().toString().substr(0, 10);
+    const timePassed = currentKingdom.lastRewardTime.sub(timeNow).mul(-1);
+    const income = gameConfig.GetBuildingConfig(currentKingdom.townCenterLv.toNumber()).IncomePerSec;
+    setText("towncenter_rewards", "pending rewards: " + income.mul(timePassed).toString() + " FDH");
+  }
 
   const { runContractFunction, isLoading } = useWeb3Contract({
     functionName: "freeMintWithURI",
@@ -46,13 +75,19 @@ function App() {
   });
   const mintDirectly = async () => {
     // const provider = new ethers.providers.Web3Provider((window as any).ethereum , "any");
-    await master.freeMintWithURI(
+    const tx = await master.freeMintWithURI(
       await signer.getAddress(),
       document.getElementsByClassName("kingdomName").namedItem("kingdomName")
         ?.textContent || "asdsadas",
       document.getElementById("URI")?.textContent || ""
     );
+    console.log("send tx");
+    const result = await tx.wait();
+    console.log("tx mined");
+    console.log(result);
+    await refresh();
   };
+
   const {
     authenticate,
     isAuthenticated,
@@ -82,27 +117,55 @@ function App() {
 
   const refresh = async () => {
     const playerAddress = await signer.getAddress();
-    setText("owner", "owner: " + playerAddress);
+    currentKingdom.owner = playerAddress;
     const tokenOwnedCount = await kingdom.balanceOf(playerAddress);
-    if(tokenOwnedCount.gt(0)){
-      const kingdomId = await kingdom.tokenOfOwnerByIndex( playerAddress,0);
-      const kingdomName = await kingdom.getName(kingdomId);
-      setText("tokenId", "tokenId: " + kingdomId.toNumber());
-      setText("kingdomName", "kingdom: " + kingdomName);
-      const townLevel = await kingdom.getBuildingLevel(kingdomId, 0);
-      setText("townLevel", "townLevel: " + townLevel.toNumber());
-      const lastClaimTime = await kingdom.getLastClaimTime(kingdomId);
-      setText("tc_lastClaimTime", "lastClaimTime: " + lastClaimTime.toNumber());
-      
 
-    }else {
-      setText("kingdomName", "You control no kingdom. Mint some.");
+    setText("owner", "owner: " + currentKingdom.owner);
+
+    if (tokenOwnedCount.gt(0)) {
+      currentKingdom.tokenId = await kingdom.tokenOfOwnerByIndex(playerAddress, 0);
+      currentKingdom.name = await kingdom.getName(currentKingdom.tokenId);
+      setText("tokenId", "tokenId: " + currentKingdom.tokenId.toString());
+      setText("kingdom_name_desc", "kingdom: " + currentKingdom.name);
+      currentKingdom.townCenterLv = await kingdom.getBuildingLevel(currentKingdom.tokenId, 0);
+      setText("towncenter", "townLevel: " + currentKingdom.townCenterLv.toNumber());
+      currentKingdom.lastRewardTime = await kingdom.getLastClaimTime( currentKingdom.tokenId);
+      // setText("tc_lastClaimTime", "lastClaimTime: " + currentKingdom.lastRewardTime.toNumber());
+
+
+      const income = gameConfig.GetBuildingConfig(currentKingdom.townCenterLv.toNumber()).IncomePerSec;
+      setText("towncenter_income", "income: " + income.toString() + "/s");
+
+      setText("towncenter_upgradecost", "upgrade cost: " + gameConfig.GetBuildingConfig(currentKingdom.townCenterLv.toNumber()).TownCost.toString() + " FDH");
+    } else {
+      console.log("no token kingdom NFT owned");
+      setText("kingdom_name_desc", "You control no kingdom. Mint some.");
+      setText("tokenId", "You control no kingdom. Mint some.");
     }
-    
 
+    currentKingdom.balance = await token.balanceOf(playerAddress);
+    setText("balance", "balance: " + currentKingdom.balance.toString() + " FDH");
+
+    console.log(currentKingdom);
   };
 
-  const claimReward = async () => { console.log("claiming") };
+  const claimReward = async () => {
+    const tx = await master.ClaimKingdomReward(currentKingdom.tokenId);
+    console.log("send tx");
+    const result = await tx.wait();
+    console.log("tx mined");
+    console.log(result);
+    await refresh();
+  };
+
+  const upgradeTownCenter = async () => {
+    const tx = await master.UpgradeKingdomBuilding(currentKingdom.tokenId, 0);
+    console.log("send tx");
+    const result = await tx.wait();
+    console.log("tx mined");
+    console.log(result);
+    await refresh();  
+  }
 
   function setText(id: string, value: string) {
     const doc = document.getElementById(id);
@@ -194,12 +257,15 @@ function App() {
           <p id="player">Player Profile:</p>
           <p id="owner">owner:</p>
           <p id="tokenId">tokenId:</p>
-          <p id="Kingdom_name">Kingdom:</p>
-          <p id="towncenter">Town Center lv 0</p>
-          <p id="tc_lastClaimTime"></p>
+          <p id="balance">balance:</p>
+          <p id="kingdom_name_desc">Kingdom:</p>
+          <p id="towncenter">Town Center lv -1</p>
+          {/* <p id="tc_lastClaimTime"></p> */}
           <p id="towncenter_income">Income: </p>
           <p id="towncenter_rewards">Pending rewards</p>
           <Button onClick={claimReward}>Claim</Button>
+          <p id="towncenter_upgradecost">Towncenter upgrade cost:</p>
+          <Button onClick={upgradeTownCenter}>Upgrade town center</Button>
         </div>
       </div>
     </div>
