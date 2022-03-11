@@ -5,6 +5,7 @@ import { Card, Typography, Button } from "antd";
 import { useMoralis, useWeb3Contract } from "react-moralis";
 import abi from "../src/contracts/MasterContract.json";
 import { BigNumber, ethers } from "ethers";
+import { Dropdown } from "react-bootstrap";
 import {
   Footer,
   Blog,
@@ -36,31 +37,105 @@ function App() {
   let kingdom: KingdomNFT;
   let currentKingdom: PlayerKingdom = new PlayerKingdom();
   const gameConfig = GetGameConfig();
-  
+
   // Set default value
   window.onload = () => onLoadWeb();
   const onLoadWeb = async () => {
     console.log("website loaded");
-    await (window as any).ethereum.request({
-      method: "wallet_switchEthereumChain",
-      params: [{ chainId: "0x3" }], // chainId must be in hexadecimal numbers
-    });
-    [signer, master, token, kingdom] = await GetContracts();
+    console.log((window as any).ethereum.networkVersion, 'window.ethereum.networkVersion');
+    await SwitchNetwork((window as any).ethereum.networkVersion);
     console.log("attaching contract ");
     await refresh();
   };
 
-// Update text pending reward every 0.1s
+  // Update text pending reward every 0.1s
   setInterval(() => {
     updatePendingRewards();
-}, 1000);  
-  
+  }, 1000);
+
+
+  async function SwitchNetwork(network: string) {
+    console.log("switching network to " + network);
+    switch (network.toLowerCase()) {
+      case "polygon":
+      case "137":
+      case "matic":
+        await (window as any).ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: BigNumber.from(137).toHexString(),
+              nativeCurrency: {
+                name: "MATIC",
+                symbol: "MATIC", // 2-6 characters long
+                decimals: 18,
+              },
+              chainName: "Matic",
+              rpcUrls: ["https://polygon-rpc.com/"],
+              blockExplorerUrls: ["https://polygonscan.com/"],
+            },
+          ], // chainId must be in hexadecimal numbers
+        });
+        break;
+      case "69":
+      case "optimistic kovan":
+        await (window as any).ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: BigNumber.from(69).toHexString(),
+              nativeCurrency: {
+                name: "OETH",
+                symbol: "OETH", // 2-6 characters long
+                decimals: 18,
+              },
+              chainName: "optimistic kovan",
+              rpcUrls: ["https://kovan.optimism.io"],
+              blockExplorerUrls: ["https://kovan-optimistic.etherscan.io"],
+            },
+          ], // chainId must be in hexadecimal numbers
+        });
+        break;
+      case "4":
+      case "rinkeby":
+        await (window as any).ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: "0x4" }], // chainId must be in hexadecimal numbers
+        });
+        break;
+      case "3":
+      case "ropsten":
+        await (window as any).ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: "0x3" }], // chainId must be in hexadecimal numbers
+        });
+        break;
+      default:
+        await (window as any).ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: "0x4" }], // chainId must be in hexadecimal numbers
+        });
+        break;
+    }
+    [signer, master, token, kingdom] = await GetContracts();
+  }
+
   function updatePendingRewards() {
-    if(currentKingdom == undefined || currentKingdom.lastRewardTime == null || currentKingdom.townCenterLv.lt(1)) return;    
+    if (
+      currentKingdom == undefined ||
+      currentKingdom.lastRewardTime == null ||
+      currentKingdom.townCenterLv.lt(1)
+    )
+      return;
     const timeNow = Date.now().toString().substr(0, 10);
     const timePassed = currentKingdom.lastRewardTime.sub(timeNow).mul(-1);
-    const income = gameConfig.GetBuildingConfig(currentKingdom.townCenterLv.toNumber()).IncomePerSec;
-    setText("towncenter_rewards", "pending rewards: " + income.mul(timePassed).toString() + " FDH");
+    const income = gameConfig.GetBuildingConfig(
+      currentKingdom.townCenterLv.toNumber()
+    ).IncomePerSec;
+    setText(
+      "towncenter_rewards",
+      "pending rewards: " + income.mul(timePassed).toString() + " FDH"
+    );
   }
 
   const { runContractFunction, isLoading } = useWeb3Contract({
@@ -123,20 +198,39 @@ function App() {
     setText("owner", "owner: " + currentKingdom.owner);
 
     if (tokenOwnedCount.gt(0)) {
-      currentKingdom.tokenId = await kingdom.tokenOfOwnerByIndex(playerAddress, 0);
+      currentKingdom.tokenId = await kingdom.tokenOfOwnerByIndex(
+        playerAddress,
+        0
+      );
       currentKingdom.name = await kingdom.getName(currentKingdom.tokenId);
       setText("tokenId", "tokenId: " + currentKingdom.tokenId.toString());
       setText("kingdom_name_desc", "kingdom: " + currentKingdom.name);
-      currentKingdom.townCenterLv = await kingdom.getBuildingLevel(currentKingdom.tokenId, 0);
-      setText("towncenter", "townLevel: " + currentKingdom.townCenterLv.toNumber());
-      currentKingdom.lastRewardTime = await kingdom.getLastClaimTime( currentKingdom.tokenId);
+      currentKingdom.townCenterLv = await kingdom.getBuildingLevel(
+        currentKingdom.tokenId,
+        0
+      );
+      setText(
+        "towncenter",
+        "townLevel: " + currentKingdom.townCenterLv.toNumber()
+      );
+      currentKingdom.lastRewardTime = await kingdom.getLastClaimTime(
+        currentKingdom.tokenId
+      );
       // setText("tc_lastClaimTime", "lastClaimTime: " + currentKingdom.lastRewardTime.toNumber());
 
-
-      const income = gameConfig.GetBuildingConfig(currentKingdom.townCenterLv.toNumber()).IncomePerSec;
+      const income = gameConfig.GetBuildingConfig(
+        currentKingdom.townCenterLv.toNumber()
+      ).IncomePerSec;
       setText("towncenter_income", "income: " + income.toString() + "/s");
 
-      setText("towncenter_upgradecost", "upgrade cost: " + gameConfig.GetBuildingConfig(currentKingdom.townCenterLv.toNumber()).TownCost.toString() + " FDH");
+      setText(
+        "towncenter_upgradecost",
+        "upgrade cost: " +
+          gameConfig
+            .GetBuildingConfig(currentKingdom.townCenterLv.toNumber())
+            .TownCost.toString() +
+          " FDH"
+      );
     } else {
       console.log("no token kingdom NFT owned");
       setText("kingdom_name_desc", "You control no kingdom. Mint some.");
@@ -144,7 +238,10 @@ function App() {
     }
 
     currentKingdom.balance = await token.balanceOf(playerAddress);
-    setText("balance", "balance: " + currentKingdom.balance.toString() + " FDH");
+    setText(
+      "balance",
+      "balance: " + currentKingdom.balance.toString() + " FDH"
+    );
 
     console.log(currentKingdom);
   };
@@ -164,8 +261,8 @@ function App() {
     const result = await tx.wait();
     console.log("tx mined");
     console.log(result);
-    await refresh();  
-  }
+    await refresh();
+  };
 
   function setText(id: string, value: string) {
     const doc = document.getElementById(id);
@@ -182,6 +279,17 @@ function App() {
             </div>
           </div>
           <div>
+            <Dropdown>
+              <Dropdown.Toggle variant="success" id="dropdown-basic">
+                Switch Network
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Dropdown.Item onClick={()=>SwitchNetwork("Ropsten")}>Ropsten Testnet</Dropdown.Item>
+                <Dropdown.Item onClick={()=>SwitchNetwork("Rinkeby")}>Rinkeby Testnet</Dropdown.Item>
+                <Dropdown.Item onClick={()=>SwitchNetwork("matic")}>Matic/Polygon Testnet</Dropdown.Item>
+                <Dropdown.Item onClick={()=>SwitchNetwork("optimistic kovan")}>Optimism Kovan Testnet</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
             <Button onClick={login}>Play & Earn</Button>
             <Button onClick={logOut} disabled={isAuthenticating}>
               Logout

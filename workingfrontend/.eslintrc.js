@@ -11,10 +11,10 @@ module.exports = {
     "plugin:prettier/recommended",
     "plugin:node/recommended",
     "eslint:recommended",
-    "plugin:eslint-comments/recommended",
+    // "plugin:eslint-comments/recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:import/typescript",
-    "plugin:functional/lite",
+    // "plugin:functional/lite",
     "prettier",
     "prettier/@typescript-eslint"
   ],
