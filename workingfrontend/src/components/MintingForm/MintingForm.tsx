@@ -11,9 +11,10 @@ import { Button, Form } from 'react-bootstrap';
 
 const fileTypes = ["JPG", "PNG", "GIF"];
 const FormMint = () => {
-    
+
+      
     const [file, setFile] = useState(null);
-    const handleChange = (file: null) => {
+    const handleChange = (file) => {
         setFile(file);
         //console.log("file uploade: " + fs.readFileSync(file))
         const readableStreamForFile = fs.createReadStream(file);
