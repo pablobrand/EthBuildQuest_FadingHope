@@ -18,6 +18,13 @@ import { CTA, Brand, Navbar } from "./components";
 import "./App.css";
 import { GetContracts, GetGameConfig } from "./utils/contracts";
 import { FadingHopeToken, KingdomNFT, MasterContract } from "./utils/typechain";
+//import { type } from './../../../udemy-blockchain/Promisses/part 3/exoplanet-explorer/bower_components/hydrolysis/src/ast-utils/descriptors';
+import{useForm} from "react-hook-form";
+
+type Profile = {
+  kindomname: string
+  pinataurl: string
+}
 
 class PlayerKingdom {
   owner!: string;
@@ -143,9 +150,9 @@ function App() {
     abi,
     contractAddress: "0x4AEAd9bEcF5F7794dF6618885c283F68b4a0C848",
     params: {
-      account: "0x87e6eEDeb0494e3E3235F61AE4Cd393ef94F2FB2",
-      kingdomName: document.getElementsByClassName("kingdomName"),
-      uri: "pldosksmmm",
+      account: String,
+      kingdomName: String,
+      uri: String,
     },
   });
   const mintDirectly = async () => {
@@ -269,6 +276,24 @@ function App() {
     if (doc != null) doc.textContent = value;
   }
 
+  const {register, handleSubmit} = useForm<Profile>()
+
+  const onSubmit = handleSubmit((data)=>{
+   async () => {
+     // const provider = new ethers.providers.Web3Provider((window as any).ethereum , "any");
+     const tx = await master.freeMintWithURI(
+      await signer.getAddress(),
+      data.kindomname,
+      data.pinataurl);
+
+      console.log("send tx");
+      const result = await tx.wait();
+      console.log("tx mined");
+      console.log(result);
+      await refresh();
+   };
+    //console.log(JSON.stringify(data))
+  })
   const htmlWeb = (
     <div className="App">
       <div className="gradient__bg">
@@ -321,7 +346,7 @@ function App() {
               alt="Test"
               style={{ marginBottom: "2rem" }}
             />
-            <Button
+            {/* <Button
               type="primary"
               shape="round"
               size="large"
@@ -330,18 +355,9 @@ function App() {
               onClick={() => runContractFunction()}
             >
               MINT
-            </Button>
-            <Button
-              type="primary"
-              shape="round"
-              size="large"
-              style={{ width: "100%" }}
-              loading={isLoading}
-              onClick={() => mintDirectly()}
-            >
-              MINT directly
-            </Button>
-            <input
+            </Button> */}
+            
+            {/* <input
               id="kingdomName"
               type="text"
               className="form-control"
@@ -357,6 +373,27 @@ function App() {
               aria-label="URI"
               aria-describedby="basic-addon1"
             />
+            <Button
+              type="primary"
+              shape="round"
+              size="large"
+              style={{ width: "100%" }}
+              loading={isLoading}
+              onClick={() => mintDirectly()}
+            >
+              MINT directly
+            </Button> */}
+            <form onSubmit={onSubmit}>
+              <div>
+                <label htmlFor="kindomname">Kindom Name</label>
+                <input id="kindomname" type="text" {...register("kindomname", {})}/>
+              </div>
+              <div>
+                <label htmlFor="pinataurl">NFT URL</label>
+                <input id="pinataurl" type="text" {...register("pinataurl", {})}/>
+              </div>
+              <button type="submit">Mint NFT</button>
+            </form>
           </Card>
           <Footer />
         </div>
