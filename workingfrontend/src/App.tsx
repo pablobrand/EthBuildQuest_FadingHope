@@ -17,6 +17,13 @@ import { CTA, Brand, Navbar } from "./components";
 import "./App.css";
 import { GetContracts, GetGameConfig } from "./utils/contracts";
 import { FadingHopeToken, KingdomNFT, MasterContract } from "./utils/typechain";
+//import { type } from './../../../udemy-blockchain/Promisses/part 3/exoplanet-explorer/bower_components/hydrolysis/src/ast-utils/descriptors';
+import{useForm} from "react-hook-form";
+
+type Profile = {
+  kindomname: string
+  pinataurl: string
+}
 
 class PlayerKingdom {
   owner!: string;
@@ -172,6 +179,11 @@ function App() {
     if (doc != null) doc.textContent = value;
   }
 
+  const {handleSubmit} = useForm<Profile>()
+
+  const onSubmit = handleSubmit((data)=>{
+    alert(JSON.stringify(data))
+  })
   const htmlWeb = (
     <div className="App">
       <div className="gradient__bg">
@@ -250,6 +262,17 @@ function App() {
             >
               MINT directly
             </Button>
+            <form onSubmit={onSubmit}>
+              <div>
+                <label htmlFor="kindomname">Kindom Name</label>
+                <input id="kindomname" name="kindomname" type="text"/>
+              </div>
+              <div>
+                <label htmlFor="pinataurl">NFT URL</label>
+                <input id="pinataurl" name="pinataurl" type="text"/>
+              </div>
+              <button type="submit">Mint NFT</button>
+            </form>
           </Card>
           <Footer />
         </div>
