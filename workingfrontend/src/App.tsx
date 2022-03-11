@@ -75,7 +75,7 @@ function App() {
       case "mumbai":
       case "80001":
       case "matic":
-        networkName = "mumbai"
+        networkName = "mumbai";
         await (window as any).ethereum.request({
           method: "wallet_addEthereumChain",
           params: [
@@ -95,7 +95,7 @@ function App() {
         break;
       case "69":
       case "optimistic kovan":
-        networkName = "okovan"
+        networkName = "okovan";
         await (window as any).ethereum.request({
           method: "wallet_addEthereumChain",
           params: [
@@ -115,7 +115,7 @@ function App() {
         break;
       case "4":
       case "rinkeby":
-        networkName = "rinkeby"
+        networkName = "rinkeby";
         await (window as any).ethereum.request({
           method: "wallet_switchEthereumChain",
           params: [{ chainId: "0x4" }], // chainId must be in hexadecimal numbers
@@ -123,14 +123,14 @@ function App() {
         break;
       case "3":
       case "ropsten":
-        networkName = "ropsten"
+        networkName = "ropsten";
         await (window as any).ethereum.request({
           method: "wallet_switchEthereumChain",
           params: [{ chainId: "0x3" }], // chainId must be in hexadecimal numbers
         });
         break;
       default:
-        networkName = "rinkeby"
+        networkName = "rinkeby";
         await (window as any).ethereum.request({
           method: "wallet_switchEthereumChain",
           params: [{ chainId: "0x4" }], // chainId must be in hexadecimal numbers
