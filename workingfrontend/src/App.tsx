@@ -213,7 +213,7 @@ function App() {
               alt="Test"
               style={{ marginBottom: "2rem" }}
             />
-            <Button
+            {/* <Button
               type="primary"
               shape="round"
               size="large"
@@ -222,17 +222,8 @@ function App() {
               onClick={() => runContractFunction()}
             >
               MINT
-            </Button>
-            <Button
-              type="primary"
-              shape="round"
-              size="large"
-              style={{ width: "100%" }}
-              loading={isLoading}
-              onClick={() => mintDirectly()}
-            >
-              MINT directly
-            </Button>
+            </Button> */}
+            
             <input
               id="kingdomName"
               type="text"
@@ -249,6 +240,16 @@ function App() {
               aria-label="URI"
               aria-describedby="basic-addon1"
             />
+            <Button
+              type="primary"
+              shape="round"
+              size="large"
+              style={{ width: "100%" }}
+              loading={isLoading}
+              onClick={() => mintDirectly()}
+            >
+              MINT directly
+            </Button>
           </Card>
           <Footer />
         </div>
