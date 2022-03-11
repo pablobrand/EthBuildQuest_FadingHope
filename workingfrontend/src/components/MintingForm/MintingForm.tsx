@@ -9,23 +9,24 @@
 // );
 // import { Button, Form } from 'react-bootstrap';
 
-// const fileTypes = ["JPG", "PNG", "GIF"];
-// const FormMint = () => {
-    
-//     const [file, setFile] = useState(null);
-//     const handleChange = (file: null) => {
-//         setFile(file);
-//         //console.log("file uploade: " + fs.readFileSync(file))
-//         const readableStreamForFile = fs.createReadStream(file);
-//         pinata.pinFileToIPFS(readableStreamForFile).then((result) => {
-//                 //handle results here
-//                 console.log("https://gateway.pinata.cloud/ipfs/"+result.IpfsHash);
-//             })
-//             .catch((err: any) => {
-//                 //handle error here
-//                 console.log(err);
-//             });
-//     }
+const fileTypes = ["JPG", "PNG", "GIF"];
+const FormMint = () => {
+
+      
+    const [file, setFile] = useState(null);
+    const handleChange = (file) => {
+        setFile(file);
+        //console.log("file uploade: " + fs.readFileSync(file))
+        const readableStreamForFile = fs.createReadStream(file);
+        pinata.pinFileToIPFS(readableStreamForFile).then((result) => {
+                //handle results here
+                console.log("https://gateway.pinata.cloud/ipfs/"+result.IpfsHash);
+            })
+            .catch((err: any) => {
+                //handle error here
+                console.log(err);
+            });
+    }
     
 
 //   return (
