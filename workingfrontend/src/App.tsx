@@ -349,7 +349,7 @@ function App() {
           >
             <Typography.Title level={3}>NFT Minter</Typography.Title>
             <img
-              src="https://ipfs.moralis.io:2053/ipfs/QmebxzVBtcEznrZgSUxorrdL8Q1XEbiyRaGxHUuwWUoF1o/images/0.png"
+              src="https://gateway.pinata.cloud/ipfs/QmQ9gyxmVqQ2LbMWAQDCRTr29W9Gv9h12mZwmJdRVB1EXC"
               alt="Test"
               style={{ marginBottom: "2rem" }}
             />
