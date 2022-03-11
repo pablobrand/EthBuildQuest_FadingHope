@@ -61,7 +61,25 @@ const config: HardhatUserConfig = {
       url: process.env.ROPSTEN_INFURA_KEY || "",
       accounts:
         process.env.ROPSTEN_DEPLOYER_PRIV_KEY !== undefined ? [process.env.ROPSTEN_DEPLOYER_PRIV_KEY] : [],
-      chainId:3,
+      chainId: 3,
+    },
+    okovan: {
+      url: process.env.KOVAN_INFURA_KEY || "",
+      accounts:
+        process.env.KOVAN_DEPLOYER_PRIV_KEY !== undefined ? [process.env.KOVAN_DEPLOYER_PRIV_KEY] : [],
+      chainId: 69,
+    },
+    optimisticKovan: {
+      url: process.env.KOVAN_INFURA_KEY || "",
+      accounts:
+        process.env.KOVAN_DEPLOYER_PRIV_KEY !== undefined ? [process.env.KOVAN_DEPLOYER_PRIV_KEY] : [],
+      chainId: 69,
+    },
+    mumbai: {
+      url: process.env.MUMBAI_INFURA_KEY || "",
+      accounts:
+        process.env.MUMBAI_DEPLOYER_PRIV_KEY !== undefined ? [process.env.MUMBAI_DEPLOYER_PRIV_KEY] : [],
+      chainId: 80001,
     },
     hardhat: {
       initialBaseFeePerGas: 0,
@@ -72,17 +90,20 @@ const config: HardhatUserConfig = {
     currency: "USD",
   },
   etherscan: {
-    apiKey: "64D8FMTIH1UG2BCD2A1BFMFZCTF6S2YG95",
+    // ETH: 64D8FMTIH1UG2BCD2A1BFMFZCTF6S2YG95
+    // optimisn: Q3SXHT8B3IRAYPRRNMPEBEKCWHHC74IG3Q
+    // polygon : 5G241ETRX733HZF3BV9X3SUSVHAVF6NTFS
+    apiKey: "Q3SXHT8B3IRAYPRRNMPEBEKCWHHC74IG3Q",
   },
   watcher: {
     test: {
-      tasks: [{ command: 'test', params: {testFiles: ['{path}'] } }],
+      tasks: [{ command: 'test', params: { testFiles: ['{path}'] } }],
       files: ['./test/**/*'],
       verbose: true
       // params: { noCompile: true, testFiles: ["testfile.ts"] }
     },
     "test-local": {
-      tasks: [{ command: 'test', params: { noCompile: false , testFiles: ['{path}'], network: "localhost" } }],
+      tasks: [{ command: 'test', params: { noCompile: false, testFiles: ['{path}'], network: "localhost" } }],
       files: ['./test/**/*'],
       verbose: true
       // params: { noCompile: true, testFiles: ["testfile.ts"] }

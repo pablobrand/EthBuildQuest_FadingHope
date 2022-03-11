@@ -99,21 +99,21 @@ export async function AttachAndSetupMasterContract(tokenAddress: string, kingdom
     const master = Master.attach(masterAddress);
     await master.deployed();
 
-    console.log("grant role")
+    // console.log("grant role")
 
-    await token.grantRole(await token.MINTER_ROLE(), master.address, { gasLimit: 1000000 });
-    await kingdom.grantRole(await kingdom.ADMIN_ROLE(), master.address, { gasLimit: 1000000 });
+    // await token.grantRole(await token.MINTER_ROLE(), master.address, { gasLimit: 1000000 });
+    // await (await kingdom.grantRole(await kingdom.ADMIN_ROLE(), master.address, { gasLimit: 1000000 })).wait();
 
-    console.log("master mint role:", await token.hasRole(await token.MINTER_ROLE(), master.address));
-    console.log("master admin role:", await kingdom.hasRole(await kingdom.ADMIN_ROLE(), master.address));
-    console.log("setup building cost")
-    await master.SetBuildingCost(0, GetTownCenterCostArray());
-    await master.SetBuildingCost(1, GetBarracksCostArray());
-    await master.SetTownCenterIncome(GetIncomeArray());
+    // console.log("master mint role:", await token.hasRole(await token.MINTER_ROLE(), master.address));
+    // console.log("master admin role:", await kingdom.hasRole(await kingdom.ADMIN_ROLE(), master.address));
+    // console.log("setup building cost")
+    // await master.SetBuildingCost(0, GetTownCenterCostArray());
+    // await master.SetBuildingCost(1, GetBarracksCostArray());
+    // await master.SetTownCenterIncome(GetIncomeArray());
 
-    console.log("building lv 10 cost:", await master.getBuildingCost(0, 10));
-    console.log("building lv 10 cost:", await master.getBuildingCost(1, 10));
-    console.log("test incom lv 6:", await master.calculateTownIncome(6, 10000))
+    // console.log("building lv 10 cost:", await master.getBuildingCost(0, 10));
+    // console.log("building lv 10 cost:", await master.getBuildingCost(1, 10));
+    // console.log("test incom lv 6:", await master.calculateTownIncome(6, 10000))
 
 
     return [master, token, kingdom];

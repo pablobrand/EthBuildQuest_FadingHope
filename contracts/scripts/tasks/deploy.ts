@@ -9,7 +9,7 @@ task("deploy-all", "Deploys and verifies contracts")
         await hre.run("deploy")
         await hre.run("etherscan-verify")
     });
-
+    
 export { }
 
 

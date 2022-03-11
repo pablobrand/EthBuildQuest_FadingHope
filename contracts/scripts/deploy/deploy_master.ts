@@ -27,8 +27,7 @@ const deploy: DeployFunction = async function (
     args: [token.address, kingdom.address],
     log: true
   });
-
-  AttachAndSetupMasterContract(token.address, kingdom.address, master.address);
+  await AttachAndSetupMasterContract(token.address, kingdom.address, master.address);
 };
 
 deploy.tags = ['hackathon']

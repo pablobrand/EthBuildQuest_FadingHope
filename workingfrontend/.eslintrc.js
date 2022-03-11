@@ -18,7 +18,7 @@ module.exports = {
     "prettier",
     // "prettier/@typescript-eslint"
   ],
-  "globals": { "BigInt": true, "console": true, "WebAssembly": true },
+  globals: { BigInt: true, console: true, WebAssembly: true },
   parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaVersion: 12,
@@ -31,7 +31,17 @@ module.exports = {
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "sort-imports": [
       "error",
-      { "ignoreDeclarationSort": true, "ignoreCase": true }
-    ]
+      { ignoreDeclarationSort: true, ignoreCase: true, ignoreMemberSort: true },
+    ],
+    "eslint-comments/disable-enable-pair": [
+      "error",
+      { "allowWholeFile": true }
+    ],
+    "eslint-comments/no-unused-disable": "error",
+    "import/order": [
+      "error",
+      { "newlines-between": "always", "alphabetize": { "order": "asc" } }
+    ],
   },
+  
 };

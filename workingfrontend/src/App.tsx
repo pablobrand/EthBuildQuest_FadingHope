@@ -1,30 +1,32 @@
+/* eslint-disable node/no-missing-import */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react";
 import logo from "./logo.svg";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Card, Typography, Button } from "antd";
+import { Button, Card, Typography } from "antd";
 import { useMoralis, useWeb3Contract } from "react-moralis";
 import abi from "../src/contracts/MasterContract.json";
 import { BigNumber, ethers } from "ethers";
 import { Dropdown } from "react-bootstrap";
+import detectEthereumProvider from "@metamask/detect-provider";
 import {
-  Footer,
   Blog,
-  Possibility,
   Features,
-  WhatGPT3,
+  Footer,
   Header,
+  Possibility,
+  WhatGPT3,
 } from "./containers";
-import { CTA, Brand, Navbar } from "./components";
+import { Brand, CTA, Navbar } from "./components";
 import "./App.css";
 import { GetContracts, GetGameConfig } from "./utils/contracts";
 import { FadingHopeToken, KingdomNFT, MasterContract } from "./utils/typechain";
-//import { type } from './../../../udemy-blockchain/Promisses/part 3/exoplanet-explorer/bower_components/hydrolysis/src/ast-utils/descriptors';
-import{useForm} from "react-hook-form";
+import { useForm } from "react-hook-form";
 
 type Profile = {
-  kindomname: string
-  pinataurl: string
-}
+  kindomname: string;
+  pinataurl: string;
+};
 
 class PlayerKingdom {
   owner!: string;
@@ -42,17 +44,22 @@ function App() {
   let master: MasterContract;
   let token: FadingHopeToken;
   let kingdom: KingdomNFT;
-  let currentKingdom: PlayerKingdom = new PlayerKingdom();
+  const currentKingdom: PlayerKingdom = new PlayerKingdom();
   const gameConfig = GetGameConfig();
 
   // Set default value
   window.onload = () => onLoadWeb();
   const onLoadWeb = async () => {
     console.log("website loaded");
-    console.log((window as any).ethereum.networkVersion, 'window.ethereum.networkVersion');
-    await SwitchNetwork((window as any).ethereum.networkVersion);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const provider = (await detectEthereumProvider()) as any;
+    console.log(provider.networkVersion, "window.ethereum.networkVersion");
+    await SwitchNetwork(provider.networkVersion);
     console.log("attaching contract ");
     await refresh();
+
+    provider.on("accountsChanged", (accounts) => refresh());
+    provider.on("chainChanged", (chain) => refresh());
   };
 
   // Update text pending reward every 0.1s
@@ -60,32 +67,35 @@ function App() {
     updatePendingRewards();
   }, 1000);
 
-
   async function SwitchNetwork(network: string) {
     console.log("switching network to " + network);
+    let networkName = "rinkeby";
     switch (network.toLowerCase()) {
       case "polygon":
-      case "137":
+      case "mumbai":
+      case "80001":
       case "matic":
+        networkName = "mumbai"
         await (window as any).ethereum.request({
           method: "wallet_addEthereumChain",
           params: [
             {
-              chainId: BigNumber.from(137).toHexString(),
+              chainId: "0x13881",
               nativeCurrency: {
                 name: "MATIC",
                 symbol: "MATIC", // 2-6 characters long
                 decimals: 18,
               },
-              chainName: "Matic",
-              rpcUrls: ["https://polygon-rpc.com/"],
-              blockExplorerUrls: ["https://polygonscan.com/"],
+              chainName: "Matic Mumbai Testnet",
+              rpcUrls: ["https://matic-mumbai.chainstacklabs.com"],
+              blockExplorerUrls: ["https://mumbai.polygonscan.com/"],
             },
           ], // chainId must be in hexadecimal numbers
         });
         break;
       case "69":
       case "optimistic kovan":
+        networkName = "okovan"
         await (window as any).ethereum.request({
           method: "wallet_addEthereumChain",
           params: [
@@ -96,7 +106,7 @@ function App() {
                 symbol: "OETH", // 2-6 characters long
                 decimals: 18,
               },
-              chainName: "optimistic kovan",
+              chainName: "Optimistic Kovan testnet",
               rpcUrls: ["https://kovan.optimism.io"],
               blockExplorerUrls: ["https://kovan-optimistic.etherscan.io"],
             },
@@ -105,6 +115,7 @@ function App() {
         break;
       case "4":
       case "rinkeby":
+        networkName = "rinkeby"
         await (window as any).ethereum.request({
           method: "wallet_switchEthereumChain",
           params: [{ chainId: "0x4" }], // chainId must be in hexadecimal numbers
@@ -112,24 +123,26 @@ function App() {
         break;
       case "3":
       case "ropsten":
+        networkName = "ropsten"
         await (window as any).ethereum.request({
           method: "wallet_switchEthereumChain",
           params: [{ chainId: "0x3" }], // chainId must be in hexadecimal numbers
         });
         break;
       default:
+        networkName = "rinkeby"
         await (window as any).ethereum.request({
           method: "wallet_switchEthereumChain",
           params: [{ chainId: "0x4" }], // chainId must be in hexadecimal numbers
         });
         break;
     }
-    [signer, master, token, kingdom] = await GetContracts();
+    [signer, master, token, kingdom] = await GetContracts(networkName);
   }
 
   function updatePendingRewards() {
     if (
-      currentKingdom == undefined ||
+      currentKingdom === undefined ||
       currentKingdom.lastRewardTime == null ||
       currentKingdom.townCenterLv.lt(1)
     )
@@ -155,21 +168,6 @@ function App() {
       uri: String,
     },
   });
-  const mintDirectly = async () => {
-    // const provider = new ethers.providers.Web3Provider((window as any).ethereum , "any");
-    const tx = await master.freeMintWithURI(
-      await signer.getAddress(),
-      document.getElementsByClassName("kingdomName").namedItem("kingdomName")
-        ?.textContent || "asdsadas",
-      document.getElementById("URI")?.textContent || ""
-    );
-    console.log("send tx");
-    const result = await tx.wait();
-    console.log("tx mined");
-    console.log(result);
-    await refresh();
-  };
-
   const {
     authenticate,
     isAuthenticated,
@@ -276,24 +274,23 @@ function App() {
     if (doc != null) doc.textContent = value;
   }
 
-  const {register, handleSubmit} = useForm<Profile>()
+  const { register, handleSubmit } = useForm<Profile>();
 
-  const onSubmit = handleSubmit((data)=>{
-   async () => {
-     // const provider = new ethers.providers.Web3Provider((window as any).ethereum , "any");
-     const tx = await master.freeMintWithURI(
+  const onSubmit = handleSubmit(async (data) => {
+    console.log(data);
+    const tx = await master.freeMintWithURI(
       await signer.getAddress(),
       data.kindomname,
-      data.pinataurl);
+      data.pinataurl
+    );
 
-      console.log("send tx");
-      const result = await tx.wait();
-      console.log("tx mined");
-      console.log(result);
-      await refresh();
-   };
-    //console.log(JSON.stringify(data))
-  })
+    console.log("send tx");
+    const result = await tx.wait();
+    console.log("tx mined");
+    console.log(result);
+    await refresh();
+  });
+
   const htmlWeb = (
     <div className="App">
       <div className="gradient__bg">
@@ -309,10 +306,20 @@ function App() {
                 Switch Network
               </Dropdown.Toggle>
               <Dropdown.Menu>
-                <Dropdown.Item onClick={()=>SwitchNetwork("Ropsten")}>Ropsten Testnet</Dropdown.Item>
-                <Dropdown.Item onClick={()=>SwitchNetwork("Rinkeby")}>Rinkeby Testnet</Dropdown.Item>
-                <Dropdown.Item onClick={()=>SwitchNetwork("matic")}>Matic/Polygon Testnet</Dropdown.Item>
-                <Dropdown.Item onClick={()=>SwitchNetwork("optimistic kovan")}>Optimism Kovan Testnet</Dropdown.Item>
+                <Dropdown.Item onClick={() => SwitchNetwork("Ropsten")}>
+                  Ropsten Testnet
+                </Dropdown.Item>
+                <Dropdown.Item onClick={() => SwitchNetwork("Rinkeby")}>
+                  Rinkeby Testnet
+                </Dropdown.Item>
+                <Dropdown.Item onClick={() => SwitchNetwork("mumbai")}>
+                  Matic/Polygon Testnet
+                </Dropdown.Item>
+                <Dropdown.Item
+                  onClick={() => SwitchNetwork("optimistic kovan")}
+                >
+                  Optimism Kovan Testnet
+                </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
             <Button onClick={login}>Play & Earn</Button>
@@ -356,7 +363,7 @@ function App() {
             >
               MINT
             </Button> */}
-            
+
             {/* <input
               id="kingdomName"
               type="text"
@@ -386,11 +393,19 @@ function App() {
             <form onSubmit={onSubmit}>
               <div>
                 <label htmlFor="kindomname">Kindom Name</label>
-                <input id="kindomname" type="text" {...register("kindomname", {})}/>
+                <input
+                  id="kindomname"
+                  type="text"
+                  {...register("kindomname", {})}
+                />
               </div>
               <div>
                 <label htmlFor="pinataurl">NFT URL</label>
-                <input id="pinataurl" type="text" {...register("pinataurl", {})}/>
+                <input
+                  id="pinataurl"
+                  type="text"
+                  {...register("pinataurl", {})}
+                />
               </div>
               <button type="submit">Mint NFT</button>
             </form>
@@ -405,7 +420,6 @@ function App() {
           <p id="balance">balance:</p>
           <p id="kingdom_name_desc">Kingdom:</p>
           <p id="towncenter">Town Center lv -1</p>
-          {/* <p id="tc_lastClaimTime"></p> */}
           <p id="towncenter_income">Income: </p>
           <p id="towncenter_rewards">Pending rewards</p>
           <Button onClick={claimReward}>Claim</Button>
