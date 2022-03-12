@@ -65,7 +65,7 @@ export default function MintForm(){
             "processData": false,
             "contentType": false,
             "mimeType": "multipart/form-data",
-            "data": form
+            "form": form
         };
         console.log("setting.data: "+settings.data);
         console.log("form: "+form);
