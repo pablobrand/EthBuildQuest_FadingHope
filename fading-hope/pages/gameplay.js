@@ -1,4 +1,6 @@
 import Head from 'next/head'
+//import Button from 'react-bootstrap/Button';
+
 
 export default function gameplay() {
   return (

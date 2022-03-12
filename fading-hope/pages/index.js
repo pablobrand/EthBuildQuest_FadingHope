@@ -1,6 +1,9 @@
 import Head from 'next/head'
 import Link from 'next/link'
+import Image from 'next/image'
 import MintForm from '../components/MintingForm/mintingform'
+import Typography from 'react-bootstrap/Button';
+
 export default function Home() {
   return (
     <div className="container">
@@ -10,16 +13,27 @@ export default function Home() {
       </Head>
 
       <main>
-        <h1 className="title">
-          Welcome to Fading Hope Game
-        </h1>
-
+        <div className='container'>
+          <Typography>
+              <h1 className="title">
+              Welcome to Fading Hope Game
+              </h1> 
+          </Typography>
+        </div>
+        <div className='container'>
+          <Image
+            alt='Game Image'
+            src='/fadinghopelogo.png'
+            width='300'
+            height='300'
+            quality={100}
+          />
+          <MintForm/>
+        </div>
         <p className="description">
           Go to game page <Link href="/gameplay">Gameplay</Link>
         </p>
-        <div>
-          <MintForm/>
-        </div>
+        
 
       </main>
 
