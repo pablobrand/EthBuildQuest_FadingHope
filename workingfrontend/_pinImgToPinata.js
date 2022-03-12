@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const process = require("process");
 const fs = require("fs");
 const pinataSDK = require("@pinata/sdk");

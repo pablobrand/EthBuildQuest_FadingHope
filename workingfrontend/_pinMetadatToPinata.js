@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const process = require("process");
 const pinataSDK = require("@pinata/sdk");
 const PINATA_API_KEY = "d4c25993ac5bef2a6460";
