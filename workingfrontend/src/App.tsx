@@ -206,6 +206,7 @@ function App() {
     setText("owner", "owner: " + currentKingdom.owner);
 
     if (tokenOwnedCount.gt(0)) {
+      console.log("found NFT kingdom owner by player address", playerAddress);
       currentKingdom.tokenId = await kingdom.tokenOfOwnerByIndex(
         playerAddress,
         0
