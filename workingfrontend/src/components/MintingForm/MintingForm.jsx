@@ -15,7 +15,7 @@ const UploadImage = () => {
   const [file, setFile] = useState(null);
   const handleChange = (file) => {
   setFile(file);
-  console.log("this is the file uploaded:" + file)
+  console.log("this is the file uploaded:" + file);
 };
       
     return (
@@ -29,6 +29,6 @@ const UploadImage = () => {
         </div>
     );
 
-}
+};
 
 export default UploadImage;

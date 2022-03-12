@@ -17,14 +17,14 @@ export default function MintForm(){
     const fileTypes = ["JPG", "PNG", "GIF"];
     const [file, setFile] = useState(null);
     const handleChange = (file) => {
+      
+      
       setFile(file);
-      //console.log(file);
     };
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
     const onSubmit = (data, file) => {
         const kindomName = data
         console.log("data from onSubmit"+data);
-        console.log("file from onSubmit"+file);
         // const form = new FormData();
         // const fileStream = fs.createReadStream(file);
         // form.append('NFT_Image', fileStream);
@@ -46,7 +46,7 @@ export default function MintForm(){
 
         const form = new FormData();
         form.append("file", file);
-        //console.log("value from form"+form);
+        console.log(form);
         const settings = {
             "async": true,
             "crossDomain": true,
@@ -59,7 +59,7 @@ export default function MintForm(){
             "processData": false,
             "contentType": false,
             "mimeType": "multipart/form-data",
-            "data": form
+            "form": form
         };
         console.log("setting.data: "+settings.data);
         $.ajax(settings).done(function (response) {

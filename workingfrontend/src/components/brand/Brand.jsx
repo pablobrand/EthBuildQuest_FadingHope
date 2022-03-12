@@ -1,8 +1,8 @@
-import React from 'react';
-import ButtonGroup from '@mui/material/ButtonGroup';
-import Button from '@mui/material/Button';
-import { pinata, valist, moralis, ipfs, chainlink, immutable } from './imports';
-import './brand.css';
+import React from "react";
+import ButtonGroup from "@mui/material/ButtonGroup";
+import Button from "@mui/material/Button";
+import { pinata, valist, moralis, ipfs, chainlink, immutable } from "./imports";
+import "./brand.css";
 
 const Brand = () => (
   <div align="center" width="150" height="150" borderRadius="50%">

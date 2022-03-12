@@ -2,7 +2,7 @@
 import { BigNumber, ethers } from "ethers";
 // import * as fs from 'fs';
 
-import * as config from './GameConfigBuilding.json';
+import * as config from "./GameConfigBuilding.json";
 import { FadingHopeToken, FadingHopeToken__factory, KingdomNFT, KingdomNFT__factory, MasterContract, MasterContract__factory } from "./typechain";
 // deploying "FadingHopeToken"  0xa187379BEF6DFdCa436115d1804A83C823FB4B99 with 2235903 gas
 // deploying "KingdomNFT" 0x495392ec53Ea7FcdF1f497f1Eaf68401224d6eEa with 4188863 gas
@@ -20,21 +20,21 @@ import { FadingHopeToken, FadingHopeToken__factory, KingdomNFT, KingdomNFT__fact
 
 
 // rinkeby address
-import { default as rinkeby_token } from './deployments/rinkeby/FadingHopeToken.json';
-import { default as rinkeby_kingdom } from './deployments/rinkeby/KingdomNFT.json';
-import { default as rinkeby_master } from './deployments/rinkeby/MasterContract.json';
+import { default as rinkeby_token } from "./deployments/rinkeby/FadingHopeToken.json";
+import { default as rinkeby_kingdom } from "./deployments/rinkeby/KingdomNFT.json";
+import { default as rinkeby_master } from "./deployments/rinkeby/MasterContract.json";
 // ropsten address
-import { default as ropsten_token } from './deployments/ropsten/FadingHopeToken.json';
-import { default as ropsten_kingdom } from './deployments/ropsten/KingdomNFT.json';
-import { default as ropsten_master } from './deployments/ropsten/MasterContract.json';
+import { default as ropsten_token } from "./deployments/ropsten/FadingHopeToken.json";
+import { default as ropsten_kingdom } from "./deployments/ropsten/KingdomNFT.json";
+import { default as ropsten_master } from "./deployments/ropsten/MasterContract.json";
 // okovan address. Optimism L2 kovan test net
-import { default as okovan_token } from './deployments/okovan/FadingHopeToken.json';
-import { default as okovan_kingdom } from './deployments/okovan/KingdomNFT.json';
-import { default as okovan_master } from './deployments/okovan/MasterContract.json';
+import { default as okovan_token } from "./deployments/okovan/FadingHopeToken.json";
+import { default as okovan_kingdom } from "./deployments/okovan/KingdomNFT.json";
+import { default as okovan_master } from "./deployments/okovan/MasterContract.json";
 // mumbai address polygon testnet
-import { default as mumbai_token } from './deployments/mumbai/FadingHopeToken.json';
-import { default as mumbai_kingdom } from './deployments/mumbai/KingdomNFT.json';
-import { default as mumbai_master } from './deployments/mumbai/MasterContract.json';
+import { default as mumbai_token } from "./deployments/mumbai/FadingHopeToken.json";
+import { default as mumbai_kingdom } from "./deployments/mumbai/KingdomNFT.json";
+import { default as mumbai_master } from "./deployments/mumbai/MasterContract.json";
 
 interface BuildingCost {
     level: number;
@@ -99,9 +99,9 @@ export async function GetContracts(network: string): Promise<[ethers.providers.J
     const signer = provider.getSigner();
     console.log("Account:", await signer.getAddress());
 
-    let fadingHopeAddress = ""
-    let kingdomNFTAddress = ""
-    let masterContractAddress = ""
+    let fadingHopeAddress = "";
+    let kingdomNFTAddress = "";
+    let masterContractAddress = "";
     switch (network) {
         case "okovan":
             fadingHopeAddress = okovan_token.address;

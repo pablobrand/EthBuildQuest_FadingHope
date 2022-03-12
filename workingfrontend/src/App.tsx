@@ -1,19 +1,22 @@
-/* eslint-disable node/no-missing-import */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react";
+import { useState } from "react";
 import logo from "./logo.svg";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useMoralis, useWeb3Contract } from "react-moralis";
+// import { useMoralis, useWeb3Contract } from "react-moralis";
 import abi from "../src/contracts/MasterContract.json";
 import { BigNumber, ethers } from "ethers";
 import detectEthereumProvider from "@metamask/detect-provider";
-import { } from "./containers";
+import {} from "./containers";
 import "./App.css";
 import { GetContracts, GetGameConfig } from "./utils/contracts";
 import { FadingHopeToken, KingdomNFT, MasterContract } from "./utils/typechain";
 import { useForm } from "react-hook-form";
-import {Card,Box, Button, Typography} from "@mui/material";
-import UploadImage from "./components/MintingForm/MintingForm"
+import { Card, Box, Button, Typography } from "@mui/material";
+import UploadImage from "./components/MintingForm/MintingForm";
+
+import FormData from "form-data";
+import axios from "axios";
 type Profile = {
   kindomname: string;
   pinataurl: string;
@@ -66,7 +69,7 @@ function App() {
       case "mumbai":
       case "80001":
       case "matic":
-        networkName = "mumbai"
+        networkName = "mumbai";
         await (window as any).ethereum.request({
           method: "wallet_addEthereumChain",
           params: [
@@ -86,7 +89,7 @@ function App() {
         break;
       case "69":
       case "optimistic kovan":
-        networkName = "okovan"
+        networkName = "okovan";
         await (window as any).ethereum.request({
           method: "wallet_addEthereumChain",
           params: [
@@ -106,7 +109,7 @@ function App() {
         break;
       case "4":
       case "rinkeby":
-        networkName = "rinkeby"
+        networkName = "rinkeby";
         await (window as any).ethereum.request({
           method: "wallet_switchEthereumChain",
           params: [{ chainId: "0x4" }], // chainId must be in hexadecimal numbers
@@ -114,14 +117,14 @@ function App() {
         break;
       case "3":
       case "ropsten":
-        networkName = "ropsten"
+        networkName = "ropsten";
         await (window as any).ethereum.request({
           method: "wallet_switchEthereumChain",
           params: [{ chainId: "0x3" }], // chainId must be in hexadecimal numbers
         });
         break;
       default:
-        networkName = "rinkeby"
+        networkName = "rinkeby";
         await (window as any).ethereum.request({
           method: "wallet_switchEthereumChain",
           params: [{ chainId: "0x4" }], // chainId must be in hexadecimal numbers
@@ -149,42 +152,42 @@ function App() {
     );
   }
 
-  const { runContractFunction, isLoading } = useWeb3Contract({
-    functionName: "freeMintWithURI",
-    abi,
-    contractAddress: "0x4AEAd9bEcF5F7794dF6618885c283F68b4a0C848",
-    params: {
-      account: String,
-      kingdomName: String,
-      uri: String,
-    },
-  });
-  const {
-    authenticate,
-    isAuthenticated,
-    isAuthenticating,
-    user,
-    account,
-    logout,
-  } = useMoralis();
+  // const { runContractFunction, isLoading } = useWeb3Contract({
+  //   functionName: "freeMintWithURI",
+  //   abi,
+  //   contractAddress: "0x4AEAd9bEcF5F7794dF6618885c283F68b4a0C848",
+  //   params: {
+  //     account: String,
+  //     kingdomName: String,
+  //     uri: String,
+  //   },
+  // });
+  // const {
+  //   authenticate,
+  //   isAuthenticated,
+  //   isAuthenticating,
+  //   user,
+  //   account,
+  //   logout,
+  // } = useMoralis();
 
-  const login = async () => {
-    if (!isAuthenticated) {
-      await authenticate({ signingMessage: "Log in using Moralis" })
-        .then(function (user) {
-          console.log("logged in user:", user);
-          console.log(user!.get("ethAddress"));
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-    }
-  };
+  // const login = async () => {
+  //   if (!isAuthenticated) {
+  //     await authenticate({ signingMessage: "Log in using Moralis" })
+  //       .then(function (user) {
+  //         console.log("logged in user:", user);
+  //         console.log(user!.get("ethAddress"));
+  //       })
+  //       .catch(function (error) {
+  //         console.log(error);
+  //       });
+  //   }
+  // };
 
-  const logOut = async () => {
-    await logout();
-    console.log("logged out");
-  };
+  // const logOut = async () => {
+  //   await logout();
+  //   console.log("logged out");
+  // };
 
   const refresh = async () => {
     const playerAddress = await signer.getAddress();
@@ -264,7 +267,7 @@ function App() {
     const doc = document.getElementById(id);
     if (doc != null) doc.textContent = value;
   }
-//form section
+  //form section
   const { register, handleSubmit } = useForm<Profile>();
 
   const onSubmit = handleSubmit(async (data) => {
@@ -281,42 +284,111 @@ function App() {
     console.log(result);
     await refresh();
   });
+  //const pinataSDK=require('@pinata/sdk')
+  //const [folderUrl, setFolderUrl] = useState("");
+  const [file, setFile] = useState();
+  const [selectedFile, setSelectedFile] = useState("");
+  const [myipfsHash, setIPFSHASH] = useState("");
 
-//front end html
+  const changeHandler = (event) => {
+    //(event)=>setFile(event.target.files[0])
+    console.log(event);
+    console.log(event.target.files);
+    console.log(event.target.files[0]);
+    setFile(event.target.files[0]);
+    //setIsSelected(true);
+  };
+  const handleFile = async (fileToHandle) => {
+    console.log("starting");
+
+    // initialize the form data
+    const formData = new FormData();
+    console.log(fileToHandle);
+    // append the file form data to
+    formData.append("file", fileToHandle);
+
+    // call the keys from .env
+
+    const API_KEY = process.env.REACT_APP_API_KEY;
+    const API_SECRET = process.env.REACT_APP_API_SECRET;
+    //const pinata=pinataSDK(API_KEY,API_SECRET)
+    // the endpoint needed to upload the file
+    const url = "https://api.pinata.cloud/pinning/pinFileToIPFS";
+    console.log(formData);
+    console.log((formData as any)._boundary);
+    const response = await axios.post(url, formData, {
+      // maxContentLength: "Infinity",
+      headers: {
+        "Content-Type": `multipart/form-data;boundary=${
+          (formData as any)._boundary
+        }`,
+        pinata_api_key: "d6f95d9e9aa8496fbfc7",
+        pinata_secret_api_key:
+          "7640b56dee9b2db26af10ae2000b169b17ed13925a9254160d956e2d5d989c41",
+      },
+    });
+
+    console.log(response);
+
+    // get the hash
+    setIPFSHASH(response.data.IpfsHash);
+  };
+  //front end html
   const htmlWeb = (
     <div className="App">
       <div className="gradient__bg">
         <div style={{ display: "flex" }}>
           <Card>
-          <Box sx={{ p: 2, display: 'flex', position: 'center' }}>
-            <Typography>NFT Minter</Typography>
-            <img
-              src="https://ipfs.moralis.io:2053/ipfs/QmebxzVBtcEznrZgSUxorrdL8Q1XEbiyRaGxHUuwWUoF1o/images/0.png"
-              alt="Test"
-              style={{ marginBottom: "2rem" }}
-            />
-            <form onSubmit={onSubmit}>
-              <div>
-                <label htmlFor="kindomname">Kindom Name</label>
-                <input
-                  id="kindomname"
-                  type="text"
-                  {...register("kindomname", {})}
-                />
-              </div>
-              <div>
-                <label htmlFor="pinataurl">NFT URL</label>
-                <input
-                  id="pinataurl"
-                  type="text"
-                  {...register("pinataurl", {})}
-                />
-              </div>
-              <UploadImage/>
-              <button type="submit" color="success">Mint NFT</button>
-            </form>
+            <Box sx={{ p: 2, display: "flex", position: "center" }}>
+              <Typography>NFT Minter</Typography>
+              {/* <img
+                src="https://ipfs.moralis.io:2053/ipfs/QmebxzVBtcEznrZgSUxorrdL8Q1XEbiyRaGxHUuwWUoF1o/images/0.png"
+                alt="Test"
+                style={{ marginBottom: "2rem" }}
+              /> */}
+              <form onSubmit={onSubmit}>
+                <div>
+                  <label htmlFor="kindomname">Kindom Name</label>
+                  <input
+                    id="kindomname"
+                    type="text"
+                    {...register("kindomname", {})}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="pinataurl">NFT URL</label>
+                  <input
+                    id="pinataurl"
+                    type="text"
+                    {...register("pinataurl", {})}
+                  />
+                </div>
+                <UploadImage />
+                <button type="submit" color="success">
+                  Mint NFT
+                </button>
+              </form>
             </Box>
           </Card>
+        </div>
+        <div className="AppUpload">
+          <input
+            type="file"
+            value={selectedFile}
+            // onChange={(event) => setFile(event?.target?.files[0] as any)}
+            onChange={changeHandler}
+          />
+          <button onClick={() => handleFile(file)}>Pin</button>
+          {
+            //  render the hash
+            myipfsHash.length > 0 && (
+              <img
+                height="200"
+                src={`https://gateway.pinata.cloud/ipfs/${myipfsHash}`}
+                alt="not loading"
+              />
+            )
+          }
         </div>
         <div>
           <Button onClick={refresh}>refresh profile</Button>

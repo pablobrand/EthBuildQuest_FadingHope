@@ -1,6 +1,6 @@
-import React from 'react';
-import './footer.css';
-import { Button } from 'react-bootstrap';
+import React from "react";
+import "./footer.css";
+import { Button } from "react-bootstrap";
 
 const Footer = () => {
 return (

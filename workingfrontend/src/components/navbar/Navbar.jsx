@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { RiMenu3Line, RiCloseLine } from 'react-icons/ri';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import Button from 'react-bootstrap/Button';
+import React, { useState } from "react";
+import { RiMenu3Line, RiCloseLine } from "react-icons/ri";
+import "bootstrap/dist/css/bootstrap.min.css";
+import Button from "react-bootstrap/Button";
 import ai from "../../assets/ai.jpg";
-import logo from '../../assets/fh.png';
-import './navbar.css';
+import logo from "../../assets/fh.png";
+import "./navbar.css";
 
 const Navbar = () => {
   const [toggleMenu, setToggleMenu] = useState(false);
