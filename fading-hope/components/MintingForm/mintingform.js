@@ -15,16 +15,21 @@ import FormData from 'form-data';
 export default function MintForm(){
     
     const fileTypes = ["JPG", "PNG", "GIF"];
-    const [file, setFile] = useState(null);
+    const [fileUpload, setFile] = useState(null);
     const handleChange = (file) => {
-      setFile(file);
-      //console.log(file);
+      setFile(fileUpload);
+      //console.log("file from handlechange"+JSON.stringify(file));
+      const refile = JSON.stringify(fileUpload);
+      console.log("fileUploded from handlechange: "+JSON.stringify(fileUpload));
+      console.log("fileUploded from refile: "+refile);
     };
+    
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
-    const onSubmit = (data, file) => {
+    const onSubmit = () => {
+        //console.log("fileUploded from outside: "+JSON.stringify(refile));
         const kindomName = data
         console.log("data from onSubmit"+data);
-        console.log("file from onSubmit"+file);
+        console.log("file from onSubmit"+refile);
         // const form = new FormData();
         // const fileStream = fs.createReadStream(file);
         // form.append('NFT_Image', fileStream);
@@ -43,9 +48,10 @@ export default function MintForm(){
         //         // Handle the response
         //         console.log(responseJson);
         //     })
+        console.log("fileRead: "+fileUpload)
 
         const form = new FormData();
-        form.append("file", file);
+        form.append("file", fileUpload);
         //console.log("value from form"+form);
         const settings = {
             "async": true,
@@ -62,6 +68,7 @@ export default function MintForm(){
             "data": form
         };
         console.log("setting.data: "+settings.data);
+        console.log("form: "+form);
         $.ajax(settings).done(function (response) {
             console.log(response);
         });
