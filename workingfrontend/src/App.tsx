@@ -3,26 +3,17 @@
 import React from "react";
 import logo from "./logo.svg";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Button, Card, Typography } from "antd";
 import { useMoralis, useWeb3Contract } from "react-moralis";
 import abi from "../src/contracts/MasterContract.json";
 import { BigNumber, ethers } from "ethers";
-import { Dropdown } from "react-bootstrap";
 import detectEthereumProvider from "@metamask/detect-provider";
-import {
-  Blog,
-  Features,
-  Footer,
-  Header,
-  Possibility,
-  WhatGPT3,
-} from "./containers";
-import { Brand, CTA, Navbar } from "./components";
+import { } from "./containers";
 import "./App.css";
 import { GetContracts, GetGameConfig } from "./utils/contracts";
 import { FadingHopeToken, KingdomNFT, MasterContract } from "./utils/typechain";
 import { useForm } from "react-hook-form";
-
+import {Card,Box, Button, Typography} from "@mui/material";
+import UploadImage from "./components/MintingForm/MintingForm"
 type Profile = {
   kindomname: string;
   pinataurl: string;
@@ -75,7 +66,7 @@ function App() {
       case "mumbai":
       case "80001":
       case "matic":
-        networkName = "mumbai";
+        networkName = "mumbai"
         await (window as any).ethereum.request({
           method: "wallet_addEthereumChain",
           params: [
@@ -95,7 +86,7 @@ function App() {
         break;
       case "69":
       case "optimistic kovan":
-        networkName = "okovan";
+        networkName = "okovan"
         await (window as any).ethereum.request({
           method: "wallet_addEthereumChain",
           params: [
@@ -115,7 +106,7 @@ function App() {
         break;
       case "4":
       case "rinkeby":
-        networkName = "rinkeby";
+        networkName = "rinkeby"
         await (window as any).ethereum.request({
           method: "wallet_switchEthereumChain",
           params: [{ chainId: "0x4" }], // chainId must be in hexadecimal numbers
@@ -123,14 +114,14 @@ function App() {
         break;
       case "3":
       case "ropsten":
-        networkName = "ropsten";
+        networkName = "ropsten"
         await (window as any).ethereum.request({
           method: "wallet_switchEthereumChain",
           params: [{ chainId: "0x3" }], // chainId must be in hexadecimal numbers
         });
         break;
       default:
-        networkName = "rinkeby";
+        networkName = "rinkeby"
         await (window as any).ethereum.request({
           method: "wallet_switchEthereumChain",
           params: [{ chainId: "0x4" }], // chainId must be in hexadecimal numbers
@@ -273,7 +264,7 @@ function App() {
     const doc = document.getElementById(id);
     if (doc != null) doc.textContent = value;
   }
-
+//form section
   const { register, handleSubmit } = useForm<Profile>();
 
   const onSubmit = handleSubmit(async (data) => {
@@ -291,105 +282,19 @@ function App() {
     await refresh();
   });
 
+//front end html
   const htmlWeb = (
     <div className="App">
       <div className="gradient__bg">
-        <div className="gpt3__navbar">
-          <div className="gpt3__navbar-links">
-            <div className="gpt3__navbar-links_logo">
-              <Navbar />
-            </div>
-          </div>
-          <div>
-            <Dropdown>
-              <Dropdown.Toggle variant="success" id="dropdown-basic">
-                Switch Network
-              </Dropdown.Toggle>
-              <Dropdown.Menu>
-                <Dropdown.Item onClick={() => SwitchNetwork("Ropsten")}>
-                  Ropsten Testnet
-                </Dropdown.Item>
-                <Dropdown.Item onClick={() => SwitchNetwork("Rinkeby")}>
-                  Rinkeby Testnet
-                </Dropdown.Item>
-                <Dropdown.Item onClick={() => SwitchNetwork("mumbai")}>
-                  Matic/Polygon Testnet
-                </Dropdown.Item>
-                <Dropdown.Item
-                  onClick={() => SwitchNetwork("optimistic kovan")}
-                >
-                  Optimism Kovan Testnet
-                </Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
-            <Button onClick={login}>Play & Earn</Button>
-            <Button onClick={logOut} disabled={isAuthenticating}>
-              Logout
-            </Button>
-          </div>
-        </div>
-        {/* <Header /> */}
-
-        {/* <Brand />
-  <WhatGPT3 />
-  <Features />
-  <Possibility />
-  <CTA />
-  <Blog /> */}
         <div style={{ display: "flex" }}>
-          <Card
-            bordered={false}
-            style={{
-              width: 600,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              textAlign: "center",
-            }}
-          >
-            <Typography.Title level={3}>NFT Minter</Typography.Title>
+          <Card>
+          <Box sx={{ p: 2, display: 'flex', position: 'center' }}>
+            <Typography>NFT Minter</Typography>
             <img
-              src="https://gateway.pinata.cloud/ipfs/QmQ9gyxmVqQ2LbMWAQDCRTr29W9Gv9h12mZwmJdRVB1EXC"
+              src="https://ipfs.moralis.io:2053/ipfs/QmebxzVBtcEznrZgSUxorrdL8Q1XEbiyRaGxHUuwWUoF1o/images/0.png"
               alt="Test"
               style={{ marginBottom: "2rem" }}
             />
-            {/* <Button
-              type="primary"
-              shape="round"
-              size="large"
-              style={{ width: "100%" }}
-              loading={isLoading}
-              onClick={() => runContractFunction()}
-            >
-              MINT
-            </Button> */}
-
-            {/* <input
-              id="kingdomName"
-              type="text"
-              className="form-control"
-              placeholder="Kingdom Name"
-              aria-label="kingdomName"
-              aria-describedby="basic-addon1"
-            />
-            <input
-              id="URI"
-              type="text"
-              className="form-control"
-              placeholder="URI"
-              aria-label="URI"
-              aria-describedby="basic-addon1"
-            />
-            <Button
-              type="primary"
-              shape="round"
-              size="large"
-              style={{ width: "100%" }}
-              loading={isLoading}
-              onClick={() => mintDirectly()}
-            >
-              MINT directly
-            </Button> */}
             <form onSubmit={onSubmit}>
               <div>
                 <label htmlFor="kindomname">Kindom Name</label>
@@ -407,10 +312,11 @@ function App() {
                   {...register("pinataurl", {})}
                 />
               </div>
-              <button type="submit">Mint NFT</button>
+              <UploadImage/>
+              <button type="submit" color="success">Mint NFT</button>
             </form>
+            </Box>
           </Card>
-          <Footer />
         </div>
         <div>
           <Button onClick={refresh}>refresh profile</Button>
