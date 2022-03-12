@@ -3,7 +3,7 @@ import React from "react";
 import { useState } from "react";
 import logo from "./logo.svg";
 import "bootstrap/dist/css/bootstrap.min.css";
-// import { useMoralis, useWeb3Contract } from "react-moralis";
+import { useMoralis, useWeb3Contract } from "react-moralis";
 import abi from "../src/contracts/MasterContract.json";
 import { BigNumber, ethers } from "ethers";
 import detectEthereumProvider from "@metamask/detect-provider";
@@ -152,42 +152,42 @@ function App() {
     );
   }
 
-  // const { runContractFunction, isLoading } = useWeb3Contract({
-  //   functionName: "freeMintWithURI",
-  //   abi,
-  //   contractAddress: "0x4AEAd9bEcF5F7794dF6618885c283F68b4a0C848",
-  //   params: {
-  //     account: String,
-  //     kingdomName: String,
-  //     uri: String,
-  //   },
-  // });
-  // const {
-  //   authenticate,
-  //   isAuthenticated,
-  //   isAuthenticating,
-  //   user,
-  //   account,
-  //   logout,
-  // } = useMoralis();
+  const { runContractFunction, isLoading } = useWeb3Contract({
+    functionName: "freeMintWithURI",
+    abi,
+    contractAddress: "0x4AEAd9bEcF5F7794dF6618885c283F68b4a0C848",
+    params: {
+      account: String,
+      kingdomName: String,
+      uri: String,
+    },
+  });
+  const {
+    authenticate,
+    isAuthenticated,
+    isAuthenticating,
+    user,
+    account,
+    logout,
+  } = useMoralis();
 
-  // const login = async () => {
-  //   if (!isAuthenticated) {
-  //     await authenticate({ signingMessage: "Log in using Moralis" })
-  //       .then(function (user) {
-  //         console.log("logged in user:", user);
-  //         console.log(user!.get("ethAddress"));
-  //       })
-  //       .catch(function (error) {
-  //         console.log(error);
-  //       });
-  //   }
-  // };
+  const login = async () => {
+    if (!isAuthenticated) {
+      await authenticate({ signingMessage: "Log in using Moralis" })
+        .then(function (user) {
+          console.log("logged in user:", user);
+          console.log(user!.get("ethAddress"));
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    }
+  };
 
-  // const logOut = async () => {
-  //   await logout();
-  //   console.log("logged out");
-  // };
+  const logOut = async () => {
+    await logout();
+    console.log("logged out");
+  };
 
   const refresh = async () => {
     const playerAddress = await signer.getAddress();
@@ -347,11 +347,11 @@ function App() {
           <Card>
             <Box sx={{ p: 2, display: "flex", position: "center" }}>
               <Typography>NFT Minter</Typography>
-              {/* <img
+              <img
                 src="https://ipfs.moralis.io:2053/ipfs/QmebxzVBtcEznrZgSUxorrdL8Q1XEbiyRaGxHUuwWUoF1o/images/0.png"
                 alt="Test"
                 style={{ marginBottom: "2rem" }}
-              /> */}
+              />
               <form onSubmit={onSubmit}>
                 <div>
                   <label htmlFor="kindomname">Kindom Name</label>
