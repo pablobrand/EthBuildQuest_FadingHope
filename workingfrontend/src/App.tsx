@@ -328,8 +328,8 @@ function App() {
             </Button>
           </div>
         </div>
-        {/* <Header /> */}
 
+        {<Header />}
         {/* <Brand />
   <WhatGPT3 />
   <Features />

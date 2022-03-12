@@ -17,7 +17,9 @@ const Navbar = () => {
         </div>
         <div className="gpt3__navbar-links_container">
           <p>
-            <a href="#demo">Demo</a>
+            <a target="_blank" href={process.env.PUBLIC_URL + "Home.html"}>
+              Demo
+            </a>
           </p>
           <p>
             <a href="#playtoearn">Play To Earn</a>
