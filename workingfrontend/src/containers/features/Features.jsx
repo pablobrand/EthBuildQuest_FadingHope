@@ -1,23 +1,23 @@
-import React from 'react';
-import Feature from '../../components/feature/Feature';
-import './features.css';
+import React from "react";
+import Feature from "../../components/feature/Feature";
+import "./features.css";
 
 const featuresData = [
   {
-    title: 'IPFS',
-    text: 'From they fine john he give of rich he. They age and draw mrs like. Improving end distrusts may instantly was household applauded.',
+    title: "IPFS",
+    text: "From they fine john he give of rich he. They age and draw mrs like. Improving end distrusts may instantly was household applauded.",
   },
   {
-    title: 'Moralis',
-    text: 'Considered sympathize ten uncommonly occasional assistance sufficient not. Letter of on become he tended active enable to.',
+    title: "Moralis",
+    text: "Considered sympathize ten uncommonly occasional assistance sufficient not. Letter of on become he tended active enable to.",
   },
   {
-    title: 'Pinata',
-    text: 'Led ask possible mistress relation elegance eat likewise debating. By message or am nothing amongst chiefly address.',
+    title: "Pinata",
+    text: "Led ask possible mistress relation elegance eat likewise debating. By message or am nothing amongst chiefly address.",
   },
   {
-    title: 'Immutable X',
-    text: 'Really boy law county she unable her sister. Feet you off its like like six. Among sex are leave law built now. In built table in an rapid blush..',
+    title: "Immutable X",
+    text: "Really boy law county she unable her sister. Feet you off its like like six. Among sex are leave law built now. In built table in an rapid blush..",
   },
 ];
 
