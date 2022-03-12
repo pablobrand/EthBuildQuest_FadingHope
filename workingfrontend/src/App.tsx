@@ -309,6 +309,12 @@ function App() {
 
     // call the keys from .env
 
+
+    // PINATA KEY
+    // API Key: 21b8f547a35cb4ccb895
+    // API Secret: 5db4ec639733e7f156dba2ddb4a3d466cd3842e313d6164be594e1127693fe0d
+    // JWT: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiI4ZDAxMTk2Ni05ODViLTRmMDktOWE4Mi0zMjRhZGY3ZTk0MDAiLCJlbWFpbCI6InZhZHByaW1hcnlAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsInBpbl9wb2xpY3kiOnsicmVnaW9ucyI6W3siaWQiOiJGUkExIiwiZGVzaXJlZFJlcGxpY2F0aW9uQ291bnQiOjF9XSwidmVyc2lvbiI6MX0sIm1mYV9lbmFibGVkIjpmYWxzZX0sImF1dGhlbnRpY2F0aW9uVHlwZSI6InNjb3BlZEtleSIsInNjb3BlZEtleUtleSI6IjIxYjhmNTQ3YTM1Y2I0Y2NiODk1Iiwic2NvcGVkS2V5U2VjcmV0IjoiNWRiNGVjNjM5NzMzZTdmMTU2ZGJhMmRkYjRhM2Q0NjZjZDM4NDJlMzEzZDYxNjRiZTU5NGUxMTI3NjkzZmUwZCIsImlhdCI6MTY0NzEwODQ2MX0.MscHiw3H6ATSr6X8XWUEs8m4Aaxv1S6Vx_DBgGTSP6E
+
     const API_KEY = process.env.REACT_APP_API_KEY;
     const API_SECRET = process.env.REACT_APP_API_SECRET;
     //const pinata=pinataSDK(API_KEY,API_SECRET)
@@ -322,9 +328,9 @@ function App() {
         "Content-Type": `multipart/form-data;boundary=${
           (formData as any)._boundary
         }`,
-        pinata_api_key: "d6f95d9e9aa8496fbfc7",
+        pinata_api_key: "21b8f547a35cb4ccb895",
         pinata_secret_api_key:
-          "7640b56dee9b2db26af10ae2000b169b17ed13925a9254160d956e2d5d989c41",
+          "5db4ec639733e7f156dba2ddb4a3d466cd3842e313d6164be594e1127693fe0d",
       },
     });
 
