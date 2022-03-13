@@ -1,7 +1,7 @@
 import React from "react";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import Button from "@mui/material/Button";
-import { pinata, valist, moralis, ipfs, chainlink, immutable } from "./imports";
+import { pinata, polygon, moralis, ipfs, quixotic } from "./imports";
 import "./brand.css";
 
 const Brand = () => (
@@ -17,10 +17,10 @@ const Brand = () => (
           />
         </a>
       </Button>
-      <Button title="Valist">
-        <a href="https://valist.io/" target="_blank">
+      <Button title="Polygon-Studios">
+        <a href="https://polygonstudios.com/" target="_blank">
           <img
-            src={valist}
+            src={polygon}
             width="150"
             height="150"
             style={{ width: 150, height: 150, borderRadius: 200 / 2 }}
@@ -47,20 +47,10 @@ const Brand = () => (
           />
         </a>
       </Button>
-      <Button title="Chainlink">
-        <a href="https://chain.link/" target="_blank">
+      <Button title="Quixotic">
+        <a href="https://quixotic.io/" target="_blank">
           <img
-            src={chainlink}
-            width="150"
-            height="150"
-            style={{ width: 150, height: 150, borderRadius: 200 / 2 }}
-          />
-        </a>
-      </Button>
-      <Button title="Immutable X">
-        <a href="https://www.immutable.com/" target="_blank">
-          <img
-            src={immutable}
+            src={quixotic}
             width="150"
             height="150"
             style={{ width: 150, height: 150, borderRadius: 200 / 2 }}
