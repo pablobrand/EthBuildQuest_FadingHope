@@ -2,6 +2,7 @@
   "name": "fading-hope",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://vad37.github.io/EthBuildQuest_FadingHope/",
   "dependencies": {
     "@babel/runtime": "7.13.8",
     "@emotion/react": "^11.8.1",
