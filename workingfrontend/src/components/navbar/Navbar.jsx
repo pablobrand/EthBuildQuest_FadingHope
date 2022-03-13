@@ -16,12 +16,12 @@ const Navbar = () => {
           <img src={logo} />
         </div>
         <div className="gpt3__navbar-links_container">
-          <p>
+          {/* <p>
             <a target="_blank" href={process.env.PUBLIC_URL + "Home.html"}>
               Demo
             </a>
-          </p>
-          <p>
+          </p> */}
+          {/* <p>
             <a href="#playtoearn">Play To Earn</a>
           </p>
           <p>
@@ -32,6 +32,9 @@ const Navbar = () => {
           </p>
           <p>
             <a href="#about">About</a>
+          </p> */}
+          <p>
+            <a href="https://testnet.quixotic.io/collection/0x87332cC5aCbda168b763d6624ece11Dd50695682">Marketplace</a>
           </p>
         </div>
       </div>

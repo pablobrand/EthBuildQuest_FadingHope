@@ -572,7 +572,7 @@ function App() {
           </p>
           <Button onClick={upgradeTownCenter}>Upgrade Town Center</Button>
         </div>
-        <Brand />
+        {/* <Brand /> */}
       </div>
     </div>
   );
