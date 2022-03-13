@@ -11,7 +11,7 @@ interface JsonData {
 
 async function main() {
     // import file excel GameConfig.xlsx
-    const workbook = XLSX.readFile('./scripts/GameConfig.xlsx');
+    const workbook = XLSX.readFile('./contracts/scripts/GameConfig.xlsx');
     const sheet_name_list = workbook.SheetNames;
     // read sheet "TownCenterIncome"
     console.log(sheet_name_list[3])
@@ -33,7 +33,7 @@ async function main() {
 
 
     // write json to file gameconfig.json
-    const file = './scripts/GameConfigBuilding.json';
+    const file = './contracts/scripts/GameConfigBuilding.json';
     const jsonString = JSON.stringify(json, null, 2);
     fs.writeFileSync(file, jsonString);
     // read json and convert to json string 
