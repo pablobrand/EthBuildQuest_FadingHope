@@ -27,8 +27,8 @@ import { Dropdown } from "react-bootstrap";
 import FormData from "form-data";
 import axios from "axios";
 type Profile = {
-  kindomname: string;
-  pinataurl: string;
+  kingdomName: string;
+  kingdomDescription: string;
 };
 
 class PlayerKingdom {
@@ -52,6 +52,7 @@ function App() {
 
   // Set default value
   window.onload = () => onLoadWeb();
+  
   const onLoadWeb = async () => {
     console.log("website loaded");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -140,7 +141,13 @@ function App() {
         });
         break;
     }
+    console.log("connect to network " + networkName);
     [signer, master, token, kingdom] = await GetContracts(networkName);
+    console.log("contracts attached");
+    console.log("signer:", signer);
+    console.log("master:", master.address);
+    console.log("token:", token.address);
+    console.log("kingdom:", kingdom.address);
   }
 
   function updatePendingRewards() {
@@ -256,7 +263,7 @@ function App() {
   };
 
   const claimReward = async () => {
-    const tx = await master.ClaimKingdomReward(currentKingdom.tokenId);
+    const tx = await master.ClaimKingdomReward(currentKingdom.tokenId.toNumber());
     console.log("send tx");
     const result = await tx.wait();
     console.log("tx mined");
@@ -265,7 +272,7 @@ function App() {
   };
 
   const upgradeTownCenter = async () => {
-    const tx = await master.UpgradeKingdomBuilding(currentKingdom.tokenId, 0);
+    const tx = await master.UpgradeKingdomBuilding(currentKingdom.tokenId.toNumber(), 0);
     console.log("send tx");
     const result = await tx.wait();
     console.log("tx mined");
@@ -277,43 +284,20 @@ function App() {
     const doc = document.getElementById(id);
     if (doc != null) doc.textContent = value;
   }
-  //form section
-  const { register, handleSubmit } = useForm<Profile>();
 
-  const onSubmit = handleSubmit(async (data) => {
-    console.log(data);
-    const tx = await master.freeMintWithURI(
-      await signer.getAddress(),
-      data.kindomname,
-      data.pinataurl
-    );
-
-    console.log("send tx");
-    const result = await tx.wait();
-    console.log("tx mined");
-    console.log(result);
-    await refresh();
-  });
   //const pinataSDK=require('@pinata/sdk')
   //const [folderUrl, setFolderUrl] = useState("");
   const [file, setFile] = useState();
-  const [selectedFile, setSelectedFile] = useState("");
+  const [selectedFile, setSelectedFile] = useState(undefined);
   const [myipfsHash, setIPFSHASH] = useState("");
 
-  const changeHandler = (event) => {
-    //(event)=>setFile(event.target.files[0])
-    console.log(event);
-    console.log(event.target.files);
-    console.log(event.target.files[0]);
-    setFile(event.target.files[0]);
-    //setIsSelected(true);
-  };
-  const handleFile = async (fileToHandle) => {
-    console.log("starting");
 
-    // initialize the form data
-    const formData = new FormData();
+  // give back ipfs hash
+  const sendFileToIPFS = async (fileToHandle) => {
+    console.log("starting sending file");
     console.log(fileToHandle);
+    // initialize the form data
+    const formData = new FormData();    
     // append the file form data to
     formData.append("file", fileToHandle);
 
@@ -342,12 +326,69 @@ function App() {
           "5db4ec639733e7f156dba2ddb4a3d466cd3842e313d6164be594e1127693fe0d",
       },
     });
-
+    console.log("pinata response");
     console.log(response);
 
     // get the hash
     setIPFSHASH(response.data.IpfsHash);
+    return "ipfs://"+ response.data.IpfsHash;
   };
+  // give back ipfs link
+  const pinJsonToIPFS = async (json) => {
+    
+    const url = "https://api.pinata.cloud/pinning/pinJSONToIPFS";
+    const response = await axios.post(url, json, {
+      headers: {
+        pinata_api_key: "21b8f547a35cb4ccb895",
+        pinata_secret_api_key:"5db4ec639733e7f156dba2ddb4a3d466cd3842e313d6164be594e1127693fe0d",
+      }
+    });
+    console.log("pinata response");
+    console.log(response);
+    return "ipfs://"+response.data.IpfsHash;
+  };
+
+  const changeHandler = (event) => {
+    //(event)=>setFile(event.target.files[0])
+    // console.log(event);
+    // console.log(event.target.files);
+    console.log(event.target.files[0]);
+    setFile(event.target.files[0]);
+    // setSelectedFile(event.target.files[0].name);
+  };
+
+
+  //form section
+  const { register, handleSubmit } = useForm<Profile>();
+
+  const onMintingNFT = handleSubmit(async (data) => {
+    console.log("checking master address" + master.address);
+    console.log(file);
+    // return;
+    const imgIpfsFile = await sendFileToIPFS(file);
+    const metadata = {
+      name: data.kingdomName,
+      description: data.kingdomDescription,
+      image: imgIpfsFile,
+    };
+    console.log("send ipfs this data");
+    console.log(metadata);
+    const metadataFile = await pinJsonToIPFS(metadata);
+
+    const tx = await master.freeMintWithURI(
+      await signer.getAddress(),
+      data.kingdomName,
+      metadataFile
+    );
+
+    console.log("send tx");
+    const result = await tx.wait();
+    console.log("tx mined");
+    console.log(result);
+    await refresh();
+  });
+
+
   //front end html
   const htmlWeb = (
     <div className="App">
@@ -388,9 +429,9 @@ function App() {
         </div>
 
         {<Header />}
-        <div style={{ display: "flex" }}>
+        <div style={{ display: "contents" }}>
           <Card>
-            <Box sx={{ p: 2, display: "flex", position: "center" }}>
+            <Box sx={{ p: 2, display: "contents", position: "center" }}>
               <Typography>NFT Minter</Typography>
               {
                 //  render the hash
@@ -402,19 +443,23 @@ function App() {
                   />
                 )
               }
-              <img
-                src="https://ipfs.moralis.io:2053/ipfs/QmebxzVBtcEznrZgSUxorrdL8Q1XEbiyRaGxHUuwWUoF1o/images/0.png"
-                alt="Test"
-                style={{ marginBottom: "2rem" }}
-              />
-              <form onSubmit={onSubmit}>
+              <form onSubmit={onMintingNFT}>
                 <div>
-                  <label htmlFor="kindomname">Kindom Name</label>
+                  <label htmlFor="kingdomName">Kingdom Name</label>
                   <input
-                    id="kindomname"
+                    id="kingdomName"
                     type="text"
-                    {...register("kindomname", {})}
+                    {...register("kingdomName", {})}
                   />
+                  
+                </div>
+                <div>
+                  <label htmlFor="kingdomDescription">Kingdom Description</label>
+                  <input
+                    id="kingdomDescription"
+                    type="text"
+                    {...register("kingdomDescription", {})}
+                  />                  
                 </div>
                 <div>
                   <input
@@ -423,7 +468,7 @@ function App() {
                     // onChange={(event) => setFile(event?.target?.files[0] as any)}
                     onChange={changeHandler}
                   />
-                  <button onClick={() => handleFile(file)}>Pin</button>
+                  {/* <button onClick={() => handleFile(file)}>Pin</button> */}
                 </div>
                 <button type="submit" color="success">
                   Mint NFT
@@ -434,16 +479,16 @@ function App() {
         </div>
         <div>
           <Button onClick={refresh}>refresh profile</Button>
-          <p id="player">Player Profile:</p>
-          <p id="owner">owner:</p>
-          <p id="tokenId">tokenId:</p>
-          <p id="balance">balance:</p>
-          <p id="kingdom_name_desc">Kingdom:</p>
-          <p id="towncenter">Town Center lv -1</p>
-          <p id="towncenter_income">Income: </p>
-          <p id="towncenter_rewards">Pending rewards</p>
+          <p id="player" style={{ color: "white" }}>Player Profile:</p>
+          <p id="owner" style={{ color: "white" }}>owner:</p>
+          <p id="tokenId" style={{ color: "white" }}>tokenId:</p>
+          <p id="balance" style={{ color: "white" }}>balance:</p>
+          <p id="kingdom_name_desc" style={{ color: "white" }}>Kingdom:</p>
+          <p id="towncenter" style={{ color: "white" }}>Town Center lv -1</p>
+          <p id="towncenter_income" style={{ color: "white" }}>Income: </p>
+          <p id="towncenter_rewards" style={{ color: "white" }}>Pending rewards</p>
           <Button onClick={claimReward}>Claim</Button>
-          <p id="towncenter_upgradecost">Towncenter upgrade cost:</p>
+          <p id="towncenter_upgradecost" style={{ color: "white" }}>Towncenter upgrade cost:</p>
           <Button onClick={upgradeTownCenter}>Upgrade town center</Button>
         </div>
       </div>
