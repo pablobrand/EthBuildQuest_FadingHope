@@ -1,8 +1,7 @@
 import pinata from "../../assets/pinata.png";
-import valist from "../../assets/valist.jpg";
+import polygon from "../../assets/polygon-studios.jpg";
 import moralis from "../../assets/moralis.jpg";
 import ipfs from "../../assets/ipfs.png";
-import chainlink from "../../assets/chainlink.jpg";
-import immutable from "../../assets/immutable.jpg";
+import quixotic from "../../assets/quixotic.jpg";
 
-export { pinata, valist, moralis, ipfs, chainlink, immutable };
+export { pinata, polygon, moralis, ipfs, quixotic };
