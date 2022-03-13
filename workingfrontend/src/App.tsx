@@ -37,7 +37,7 @@ class PlayerKingdom {
   tokenId!: BigNumber;
   name!: string;
   uri!: string;
-  metadata!: string;
+  metadata!: any;
   townCenterLv!: BigNumber;
   lastRewardTime!: BigNumber;
 }
@@ -52,13 +52,11 @@ function App() {
 
   // Set default value
   window.onload = () => onLoadWeb();
-  
+
   const onLoadWeb = async () => {
     console.log("website loaded");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const provider = (await detectEthereumProvider()) as any;
-    console.log(provider.networkVersion, "window.ethereum.networkVersion");
-    await SwitchNetwork(provider.networkVersion);
+    const provider = await refreshContractConnection();
     console.log("attaching contract ");
     await refresh();
 
@@ -69,9 +67,17 @@ function App() {
   // Update text pending reward every 0.1s
   setInterval(() => {
     updatePendingRewards();
+    if (signer == undefined || signer == null) refreshContractConnection();
   }, 1000);
 
-  async function SwitchNetwork(network: string) {
+  async function refreshContractConnection() {
+    const provider = (await detectEthereumProvider()) as any;
+    console.log(provider.networkVersion, "window.ethereum.networkVersion");
+    await ConnectToNetwork(provider.networkVersion);
+    return provider;
+  }
+
+  async function ConnectToNetwork(network: string) {
     console.log("switching network to " + network);
     let networkName = "rinkeby";
     switch (network.toLowerCase()) {
@@ -206,6 +212,7 @@ function App() {
   };
 
   const refresh = async () => {
+    if (signer == undefined) await refreshContractConnection();
     const playerAddress = await signer.getAddress();
     currentKingdom.owner = playerAddress;
     const tokenOwnedCount = await kingdom.balanceOf(playerAddress);
@@ -220,7 +227,7 @@ function App() {
       );
       currentKingdom.name = await kingdom.getName(currentKingdom.tokenId);
       setText("tokenId", "tokenId: " + currentKingdom.tokenId.toString());
-      setText("kingdom_name_desc", "kingdom: " + currentKingdom.name);
+      setText("kingdom_name_desc", "Kingdom Name: " + currentKingdom.name);
       currentKingdom.townCenterLv = await kingdom.getBuildingLevel(
         currentKingdom.tokenId,
         0
@@ -243,13 +250,26 @@ function App() {
         "towncenter_upgradecost",
         "upgrade cost: " +
           gameConfig
-            .GetBuildingConfig(currentKingdom.townCenterLv.toNumber())
+            .GetBuildingConfig(currentKingdom.townCenterLv.add(1).toNumber())
             .TownCost.toString() +
           " FDH"
       );
+
+      currentKingdom.uri = await kingdom.tokenURI(currentKingdom.tokenId);
+      console.log("uri: " + currentKingdom.uri);
+      const uriLink = "https://gateway.pinata.cloud/ipfs/" +currentKingdom?.uri.replace("ipfs://", "");
+      console.log("uriLink: " + uriLink);
+      const metadata = (await axios.get(uriLink)).data;
+      console.log(metadata);
+      currentKingdom.metadata = metadata;
+      setText(
+        "description",
+        "description: " + currentKingdom.metadata.description
+      );
+      
     } else {
-      console.log("no token kingdom NFT owned");
-      setText("kingdom_name_desc", "You control no kingdom. Mint some.");
+      console.log("player have no token kingdom NFT owned");
+      // setText("kingdom_name_desc", "You control no kingdom. Mint some.");
       setText("tokenId", "You control no kingdom. Mint some.");
     }
 
@@ -258,12 +278,14 @@ function App() {
       "balance",
       "balance: " + currentKingdom.balance.toString() + " FDH"
     );
-
+    console.log("kingdom object data:");
     console.log(currentKingdom);
   };
 
   const claimReward = async () => {
-    const tx = await master.ClaimKingdomReward(currentKingdom.tokenId.toNumber());
+    const tx = await master.ClaimKingdomReward(
+      currentKingdom.tokenId.toNumber()
+    );
     console.log("send tx");
     const result = await tx.wait();
     console.log("tx mined");
@@ -272,7 +294,10 @@ function App() {
   };
 
   const upgradeTownCenter = async () => {
-    const tx = await master.UpgradeKingdomBuilding(currentKingdom.tokenId.toNumber(), 0);
+    const tx = await master.UpgradeKingdomBuilding(
+      currentKingdom.tokenId.toNumber(),
+      0
+    );
     console.log("send tx");
     const result = await tx.wait();
     console.log("tx mined");
@@ -291,13 +316,12 @@ function App() {
   const [selectedFile, setSelectedFile] = useState(undefined);
   const [myipfsHash, setIPFSHASH] = useState("");
 
-
   // give back ipfs hash
   const sendFileToIPFS = async (fileToHandle) => {
     console.log("starting sending file");
     console.log(fileToHandle);
     // initialize the form data
-    const formData = new FormData();    
+    const formData = new FormData();
     // append the file form data to
     formData.append("file", fileToHandle);
 
@@ -331,21 +355,22 @@ function App() {
 
     // get the hash
     setIPFSHASH(response.data.IpfsHash);
-    return "ipfs://"+ response.data.IpfsHash;
+
+    return "ipfs://" + response.data.IpfsHash;
   };
   // give back ipfs link
   const pinJsonToIPFS = async (json) => {
-    
     const url = "https://api.pinata.cloud/pinning/pinJSONToIPFS";
     const response = await axios.post(url, json, {
       headers: {
         pinata_api_key: "21b8f547a35cb4ccb895",
-        pinata_secret_api_key:"5db4ec639733e7f156dba2ddb4a3d466cd3842e313d6164be594e1127693fe0d",
-      }
+        pinata_secret_api_key:
+          "5db4ec639733e7f156dba2ddb4a3d466cd3842e313d6164be594e1127693fe0d",
+      },
     });
     console.log("pinata response");
     console.log(response);
-    return "ipfs://"+response.data.IpfsHash;
+    return "ipfs://" + response.data.IpfsHash;
   };
 
   const changeHandler = (event) => {
@@ -356,7 +381,6 @@ function App() {
     setFile(event.target.files[0]);
     // setSelectedFile(event.target.files[0].name);
   };
-
 
   //form section
   const { register, handleSubmit } = useForm<Profile>();
@@ -388,7 +412,6 @@ function App() {
     await refresh();
   });
 
-
   //front end html
   const htmlWeb = (
     <div className="App">
@@ -405,17 +428,17 @@ function App() {
                 Switch Network
               </Dropdown.Toggle>
               <Dropdown.Menu>
-                <Dropdown.Item onClick={() => SwitchNetwork("Ropsten")}>
+                <Dropdown.Item onClick={() => ConnectToNetwork("Ropsten")}>
                   Ropsten Testnet
                 </Dropdown.Item>
-                <Dropdown.Item onClick={() => SwitchNetwork("Rinkeby")}>
+                <Dropdown.Item onClick={() => ConnectToNetwork("Rinkeby")}>
                   Rinkeby Testnet
                 </Dropdown.Item>
-                <Dropdown.Item onClick={() => SwitchNetwork("mumbai")}>
+                <Dropdown.Item onClick={() => ConnectToNetwork("mumbai")}>
                   Matic/Polygon Testnet
                 </Dropdown.Item>
                 <Dropdown.Item
-                  onClick={() => SwitchNetwork("optimistic kovan")}
+                  onClick={() => ConnectToNetwork("optimistic kovan")}
                 >
                   Optimism Kovan Testnet
                 </Dropdown.Item>
@@ -451,15 +474,16 @@ function App() {
                     type="text"
                     {...register("kingdomName", {})}
                   />
-                  
                 </div>
                 <div>
-                  <label htmlFor="kingdomDescription">Kingdom Description</label>
+                  <label htmlFor="kingdomDescription">
+                    Kingdom Description
+                  </label>
                   <input
                     id="kingdomDescription"
                     type="text"
                     {...register("kingdomDescription", {})}
-                  />                  
+                  />
                 </div>
                 <div>
                   <input
@@ -479,16 +503,51 @@ function App() {
         </div>
         <div>
           <Button onClick={refresh}>refresh profile</Button>
-          <p id="player" style={{ color: "white" }}>Player Profile:</p>
-          <p id="owner" style={{ color: "white" }}>owner:</p>
-          <p id="tokenId" style={{ color: "white" }}>tokenId:</p>
-          <p id="balance" style={{ color: "white" }}>balance:</p>
-          <p id="kingdom_name_desc" style={{ color: "white" }}>Kingdom:</p>
-          <p id="towncenter" style={{ color: "white" }}>Town Center lv -1</p>
-          <p id="towncenter_income" style={{ color: "white" }}>Income: </p>
-          <p id="towncenter_rewards" style={{ color: "white" }}>Pending rewards</p>
+          <p id="player" style={{ color: "white" }}>
+            Player Profile
+          </p>
+          {
+            //  render the hash
+            
+            currentKingdom?.metadata?.image > 8 && (
+                <img
+                  height="200"
+                  src={`https://gateway.pinata.cloud/ipfs/${currentKingdom.metadata.image.replace(
+                    "ipfs://",
+                    ""
+                  )}`}
+                  alt="not loading"
+                />
+              )
+          }
+          <p id="owner" style={{ color: "white" }}>
+            owner:
+          </p>
+          <p id="kingdom_name_desc" style={{ color: "white" }}>
+            Kingdom:
+          </p>
+          <p id="description" style={{ color: "white" }}>
+            description:
+          </p>
+          <p id="tokenId" style={{ color: "white" }}>
+            tokenId:
+          </p>
+          <p id="balance" style={{ color: "white" }}>
+            balance:
+          </p>
+          <p id="towncenter" style={{ color: "white" }}>
+            Town Center lv -1
+          </p>
+          <p id="towncenter_income" style={{ color: "white" }}>
+            Income:{" "}
+          </p>
+          <p id="towncenter_rewards" style={{ color: "white" }}>
+            Pending rewards
+          </p>
           <Button onClick={claimReward}>Claim</Button>
-          <p id="towncenter_upgradecost" style={{ color: "white" }}>Towncenter upgrade cost:</p>
+          <p id="towncenter_upgradecost" style={{ color: "white" }}>
+            Towncenter upgrade cost:
+          </p>
           <Button onClick={upgradeTownCenter}>Upgrade town center</Button>
         </div>
       </div>
