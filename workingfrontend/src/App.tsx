@@ -19,7 +19,8 @@ import { GetContracts, GetGameConfig } from "./utils/contracts";
 import { FadingHopeToken, KingdomNFT, MasterContract } from "./utils/typechain";
 import { useForm } from "react-hook-form";
 // import { Button, Card, Typography } from "antd";
-import { Card, Box, Button, Typography } from "@mui/material";
+import Button from "react-bootstrap/Button";
+import { Card, Box, Typography } from "@mui/material";
 import { Brand, CTA, Navbar } from "./components";
 import UploadImage from "./components/MintingForm/MintingForm";
 import { Dropdown } from "react-bootstrap";
@@ -170,7 +171,7 @@ function App() {
     ).IncomePerSec;
     setText(
       "towncenter_rewards",
-      "pending rewards: " + income.mul(timePassed).toString() + " FDH"
+      "Pending Rewards : " + income.mul(timePassed).toString() + " FDH"
     );
   }
 
@@ -217,7 +218,7 @@ function App() {
     currentKingdom.owner = playerAddress;
     const tokenOwnedCount = await kingdom.balanceOf(playerAddress);
 
-    setText("owner", "owner: " + currentKingdom.owner);
+    setText("owner", "Owner : " + currentKingdom.owner);
 
     if (tokenOwnedCount.gt(0)) {
       console.log("found NFT kingdom owner by player address", playerAddress);
@@ -226,15 +227,15 @@ function App() {
         0
       );
       currentKingdom.name = await kingdom.getName(currentKingdom.tokenId);
-      setText("tokenId", "tokenId: " + currentKingdom.tokenId.toString());
-      setText("kingdom_name_desc", "Kingdom Name: " + currentKingdom.name);
+      setText("tokenId", "Token ID : " + currentKingdom.tokenId.toString());
+      setText("kingdom_name_desc", "Kingdom Name : " + currentKingdom.name);
       currentKingdom.townCenterLv = await kingdom.getBuildingLevel(
         currentKingdom.tokenId,
         0
       );
       setText(
         "towncenter",
-        "townLevel: " + currentKingdom.townCenterLv.toNumber()
+        "Town Level : " + currentKingdom.townCenterLv.toNumber()
       );
       currentKingdom.lastRewardTime = await kingdom.getLastClaimTime(
         currentKingdom.tokenId
@@ -244,11 +245,11 @@ function App() {
       const income = gameConfig.GetBuildingConfig(
         currentKingdom.townCenterLv.toNumber()
       ).IncomePerSec;
-      setText("towncenter_income", "income: " + income.toString() + "/s");
+      setText("towncenter_income", "Income : " + income.toString() + "/s");
 
       setText(
         "towncenter_upgradecost",
-        "upgrade cost: " +
+        "Town Upgrade Cost : " +
           gameConfig
             .GetBuildingConfig(currentKingdom.townCenterLv.add(1).toNumber())
             .TownCost.toString() +
@@ -264,7 +265,7 @@ function App() {
       currentKingdom.metadata = metadata;
       setText(
         "description",
-        "description: " + currentKingdom.metadata.description
+        "Description : " + currentKingdom.metadata.description
       );
       
     } else {
@@ -276,7 +277,7 @@ function App() {
     currentKingdom.balance = await token.balanceOf(playerAddress);
     setText(
       "balance",
-      "balance: " + currentKingdom.balance.toString() + " FDH"
+      "Balance : " + currentKingdom.balance.toString() + " FDH"
     );
     console.log("kingdom object data:");
     console.log(currentKingdom);
@@ -444,18 +445,39 @@ function App() {
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
-            <Button onClick={login}>Play & Earn</Button>
-            <Button onClick={logOut} disabled={isAuthenticating}>
+            <Button style={{ fontWeight: "bold" }} onClick={login}>
+              Play & Earn
+            </Button>
+            <Button
+              style={{ fontWeight: "bold" }}
+              onClick={logOut}
+              disabled={isAuthenticating}
+            >
               Logout
             </Button>
           </div>
         </div>
 
         {<Header />}
-        <div style={{ display: "contents" }}>
+        <div
+          style={{
+            display: "center",
+            marginRight: "100px",
+            marginLeft: "100px",
+            marginBottom: "50px",
+            marginTop: "-50px",
+          }}
+        >
           <Card>
-            <Box sx={{ p: 2, display: "contents", position: "center" }}>
-              <Typography>NFT Minter</Typography>
+            <Box
+              sx={{
+                p: 2,
+                display: "contents",
+                position: "center",
+                backgroundColor: "black",
+              }}
+            >
+              <Typography style={{ fontWeight: "bold" }}>NFT Minter</Typography>
               {
                 //  render the hash
                 myipfsHash.length > 0 && (
@@ -502,54 +524,55 @@ function App() {
           </Card>
         </div>
         <div>
-          <Button onClick={refresh}>refresh profile</Button>
+          <Button onClick={refresh}>Refresh Profile</Button>
           <p id="player" style={{ color: "white" }}>
             Player Profile
           </p>
           {
             //  render the hash
-            
+
             currentKingdom?.metadata?.image > 8 && (
-                <img
-                  height="200"
-                  src={`https://gateway.pinata.cloud/ipfs/${currentKingdom.metadata.image.replace(
-                    "ipfs://",
-                    ""
-                  )}`}
-                  alt="not loading"
-                />
-              )
+              <img
+                height="200"
+                src={`https://gateway.pinata.cloud/ipfs/${currentKingdom.metadata.image.replace(
+                  "ipfs://",
+                  ""
+                )}`}
+                alt="not loading"
+              />
+            )
           }
           <p id="owner" style={{ color: "white" }}>
-            owner:
+            Owner :
           </p>
           <p id="kingdom_name_desc" style={{ color: "white" }}>
-            Kingdom:
+            Kingdom :
           </p>
           <p id="description" style={{ color: "white" }}>
-            description:
+            Description :
           </p>
           <p id="tokenId" style={{ color: "white" }}>
-            tokenId:
+            TokenId :
           </p>
           <p id="balance" style={{ color: "white" }}>
-            balance:
+            Balance :
           </p>
           <p id="towncenter" style={{ color: "white" }}>
             Town Center lv -1
           </p>
           <p id="towncenter_income" style={{ color: "white" }}>
-            Income:{" "}
+            Income :{" "}
           </p>
           <p id="towncenter_rewards" style={{ color: "white" }}>
-            Pending rewards
+            Pending Rewards
           </p>
           <Button onClick={claimReward}>Claim</Button>
           <p id="towncenter_upgradecost" style={{ color: "white" }}>
-            Towncenter upgrade cost:
+            Towncenter Upgrade Cost:
           </p>
-          <Button onClick={upgradeTownCenter}>Upgrade town center</Button>
+          <Button onClick={upgradeTownCenter}>Upgrade Town Center</Button>
         </div>
+        <Brand />
       </div>
     </div>
   );
