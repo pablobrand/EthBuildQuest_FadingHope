@@ -269,7 +269,7 @@ function App() {
 
   function setText(id: string, value: string) {
     const doc = document.getElementById(id);
-    if (doc != null) (doc as any).text= value;
+    if (doc != null) doc.textContent = value;
   }
 
   const { register, handleSubmit } = useForm<Profile>();
