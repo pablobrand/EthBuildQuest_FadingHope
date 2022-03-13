@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/EthBuildQuest_FadingHope/static/css/main.8ae4e6fa.css",
-    "main.js": "/EthBuildQuest_FadingHope/static/js/main.2a1cd096.js",
+    "main.js": "/EthBuildQuest_FadingHope/static/js/main.8790f38a.js",
     "static/js/787.8e68282c.chunk.js": "/EthBuildQuest_FadingHope/static/js/787.8e68282c.chunk.js",
     "static/media/possibility.png": "/EthBuildQuest_FadingHope/static/media/possibility.525f13b61a2157d44de0.png",
     "static/media/blog01.png": "/EthBuildQuest_FadingHope/static/media/blog01.cefc0932eae0d33a0342.png",
@@ -12,15 +12,15 @@
     "static/media/ai.jpg": "/EthBuildQuest_FadingHope/static/media/ai.be3ec4c40e9d7f63af31.jpg",
     "static/media/ipfs.png": "/EthBuildQuest_FadingHope/static/media/ipfs.eaaca3b0b8460d8f8f32.png",
     "static/media/moralis.jpg": "/EthBuildQuest_FadingHope/static/media/moralis.62de6e156867b399a92c.jpg",
-    "static/media/valist.jpg": "/EthBuildQuest_FadingHope/static/media/valist.8bd533a7ebd5c1f0a1a9.jpg",
+    "static/media/polygon-studios.jpg": "/EthBuildQuest_FadingHope/static/media/polygon-studios.bca80aa395fefca53343.jpg",
     "static/media/pinata.png": "/EthBuildQuest_FadingHope/static/media/pinata.2491c9ad97e6821fed1a.png",
     "index.html": "/EthBuildQuest_FadingHope/index.html",
     "main.8ae4e6fa.css.map": "/EthBuildQuest_FadingHope/static/css/main.8ae4e6fa.css.map",
-    "main.2a1cd096.js.map": "/EthBuildQuest_FadingHope/static/js/main.2a1cd096.js.map",
+    "main.8790f38a.js.map": "/EthBuildQuest_FadingHope/static/js/main.8790f38a.js.map",
     "787.8e68282c.chunk.js.map": "/EthBuildQuest_FadingHope/static/js/787.8e68282c.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.8ae4e6fa.css",
-    "static/js/main.2a1cd096.js"
+    "static/js/main.8790f38a.js"
   ]
 }
